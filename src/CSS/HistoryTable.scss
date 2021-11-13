@@ -1,0 +1,28 @@
+.history-table {
+    thead {
+        position: sticky;
+        top: 0;
+    }
+
+    .diff-up {
+        svg {
+            color: green !important;
+        }
+    }
+
+    .diff-down {
+        svg {
+            color: red !important;
+        }
+    }
+
+    .diff-equ {
+        svg {
+            color: grey !important;
+        }
+    }
+
+    th, td {
+        text-align: center;
+    }
+}

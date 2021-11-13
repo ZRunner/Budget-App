@@ -1,0 +1,17 @@
+.expense-item {
+    .edit-btn {
+        cursor: pointer;
+
+        &:hover {
+            color: orange;
+        }
+    }
+
+    .delete-btn {
+        cursor: pointer;
+
+        &:hover {
+            color: red;
+        }
+    }
+}
