@@ -5,7 +5,10 @@ import { AppContext } from '../AppContext';
 
 const options = {
   pointBackgroundColor: '#fff',
-  radius: 5,
+  radius: 3,
+  parsing: false,
+  normalized: true,
+  spanGaps: true,
 }
 
 function createDataset(earnings, expenses) {
@@ -15,12 +18,14 @@ function createDataset(earnings, expenses) {
         label: 'Earnings',
         data: earnings,
         fill: true,
+        borderColor: "#009926",
         backgroundColor: '#009900',
       },
       {
         label: 'Expenses',
         data: expenses,
         fill: true,
+        borderColor: "#ff0040",
         backgroundColor: '#ff0066',
       },
     ],
