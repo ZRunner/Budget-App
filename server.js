@@ -9,6 +9,13 @@ app.use(express.static(root));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// error handler
+app.use(function(err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+  
+
 let db;
 mysql.createPool({host: process.env.DB_HOST, port: (process.env.DB_PORT || 3306), user: process.env.DB_USER, password: process.env.DB_PWD, database: process.env.DB_NAME})
 .then(pool => {
@@ -18,12 +25,6 @@ mysql.createPool({host: process.env.DB_HOST, port: (process.env.DB_PORT || 3306)
         console.log("Connected to database!");
     });
 }).catch(console.error);
-
-
-app.get("/api/flows", async (req, res) => {
-    const query = await db.query("SELECT * FROM flows;");
-    res.json(query);
-})
 
 app.get("/api/bank_accounts", async (req, res) => {
     const query = await db.query("SELECT * FROM bank_accounts;");
@@ -35,18 +36,59 @@ app.get("/api/categories", async (req, res) => {
     res.json(query);
 })
 
-app.post("/api/flow", async (req, res) => {
+app.get("/api/flows", async (req, res) => {
+    const query = await db.query("SELECT * FROM flows ORDER BY date DESC;");
+    res.json(query);
+})
+
+app.get("/api/flows/:id", async (req, res) => {
+    const query = await db.query("SELECT * FROM flows WHERE id = ?;", [req.params.id]);
+    res.json(query[0]);
+})
+
+app.post("/api/flows", async (req, res) => {
     if (!req.body.name || !req.body.cost || !req.body.category || !req.body.bank_account || !req.body.date) {
         res.status(400).send("Missing parameter");
         return;
     }
-    const query = await db.query("INSERT INTO `flows` (`id`, `name`, `cost`, `category`, `bank_account`, `date`) VALUES (NULL, ?, ?, ?, ?, ?)", [req.body.name, req.body.cost, req.body.category, req.body.bank_account, req.body.date])
-    console.debug(query);
+    try {
+        const query = await db.query("INSERT INTO `flows` (`id`, `name`, `cost`, `category`, `bank_account`, `date`) VALUES (NULL, ?, ?, ?, ?, ?)", [req.body.name, req.body.cost, req.body.category, req.body.bank_account, req.body.date])
+    } catch (err) {
+        return next(err);
+    }
     res.status(200).send(String(query.insertId));
 })
 
-app.delete("/api/flow/:id", async (req, res) => {
-    const query = await db.query("DELETE FROM `flows` WHERE id = ?", [req.params.id]);
+app.delete("/api/flows/:id", async (req, res) => {
+    try {
+        const query = await db.query("DELETE FROM `flows` WHERE id = ?", [req.params.id]);
+    } catch (err) {
+        return next(err);
+    }
+    res.status(200).send(String(query.affectedRows));
+})
+
+app.put("/api/flows/:id", async (req, res, next) => {
+    let flow = {
+        name: req.body.name,
+        cost: req.body.cost,
+        category: req.body.category,
+        bank_account: req.body.bank_account,
+        date: req.body.date,
+    }
+    if (!flow.name || !flow.cost || !flow.category || !flow.bank_account || !flow.date) {
+        res.status(400).send("Missing parameter");
+        return;
+    }
+
+    const columns = Object.keys(flow);
+    const values = Object.values(flow);
+    let query;
+    try {
+        query = await db.query("UPDATE flows SET `" + columns.join("` = ?, `") +"` = ? WHERE id = ?", [...values, req.params.id]);
+    } catch (err) {
+        return next(err);
+    }
     res.status(200).send(String(query.affectedRows));
 })
 

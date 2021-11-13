@@ -22,7 +22,7 @@ class ApiHandler {
     }
     
     async addFlow(flow) {
-        const resp = await fetch("/api/flow", {
+        const resp = await fetch("/api/flows", {
             method: 'POST',
             headers: {Accept, 'content-type': 'application/json'},
             body: JSON.stringify(flow),
@@ -31,7 +31,7 @@ class ApiHandler {
     }
     
     async deleteFlow(flow_id) {
-        const resp = await fetch("/api/flow/"+flow_id, {
+        const resp = await fetch("/api/flows/"+flow_id, {
             method: 'DELETE',
             headers: {Accept},
         });
@@ -39,9 +39,9 @@ class ApiHandler {
     }
 
     async editFlow(flow_id, flow) {
-        const resp = await fetch("/api/flow/"+flow_id, {
+        const resp = await fetch("/api/flows/"+flow_id, {
             method: 'PUT',
-            headers: {Accept},
+            headers: {Accept, 'content-type': 'application/json'},
             body: JSON.stringify(flow),
         });
         return resp.ok;
