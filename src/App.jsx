@@ -10,10 +10,11 @@ import SummaryBox from './Components/SummaryBox';
 import { AppProvider } from './AppContext';
 import ExpensesPage from './ExpensesPage';
 import HistoryPage from './HistoryPage';
+import StatsPage from './StatsPage';
 
 const App = () => {
 
-  const [value, setValue] = React.useState('1');
+  const [value, setValue] = React.useState('3');
 
 
   return (
@@ -37,12 +38,13 @@ const App = () => {
           <TabList onChange={(e, value) => setValue(value)}>
             <Tab label="Expenses" value="1" />
             <Tab label="Accounts history" value="2" />
-            <Tab label="Statistics" value="3" disabled />
-            <Tab label="Settings" value="3" disabled />
+            <Tab label="Statistics" value="3" />
+            <Tab label="Settings" value="4" disabled />
           </TabList>
         </Box>
         <TabPanel value="1"><ExpensesPage/></TabPanel>
         <TabPanel value="2"><HistoryPage/></TabPanel>
+        <TabPanel value="3"><StatsPage/></TabPanel>
       </TabContext>
       
     </div>

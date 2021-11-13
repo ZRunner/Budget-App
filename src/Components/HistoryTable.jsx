@@ -49,7 +49,7 @@ class HistoryTable extends Component {
 
         let i = 0;
         while (day < today && i < 350) {
-            for (let exp of this.getExpensesOfDay(day)) {
+            for (let exp of this.context.getFlowsOfDay(day)) {
                 if (this.props.accounts.includes(exp.bank_account)) {
                     dayState.set(exp.bank_account, dayState.get(exp.bank_account)+exp.cost);
                 }
@@ -75,13 +75,6 @@ class HistoryTable extends Component {
             prev_result = total;
         }
         return result.reverse();
-    }
-
-    getExpensesOfDay(day) {
-        return this.context.expenses.filter(exp => {
-            const d = new Date(exp.date)
-            return d.getDate() === day.getDate() && d.getMonth() === day.getMonth() && d.getFullYear() === day.getFullYear();
-        });
     }
 
     formatDate(raw_date) {

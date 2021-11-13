@@ -135,9 +135,16 @@ export class AppProvider extends React.Component {
         return this.state.categories.find(acc => acc.id === id);
     }
 
+    getFlowsOfDay = (day) => {
+        return this.state.expenses.filter(exp => {
+            const d = new Date(exp.date)
+            return d.getDate() === day.getDate() && d.getMonth() === day.getMonth() && d.getFullYear() === day.getFullYear();
+        });
+    }
+
     render() {
         return (
-            <AppContext.Provider value={{...this.state, getExpensesOnly:this.getExpensesOnly, getIncomsOnly:this.getIncomsOnly, getBalance:this.getBalance, getAccount:this.getAccount, getCategory:this.getCategory, dispatch: this.dispatch}}>
+            <AppContext.Provider value={{...this.state, getExpensesOnly:this.getExpensesOnly, getIncomsOnly:this.getIncomsOnly, getBalance:this.getBalance, getAccount:this.getAccount, getCategory:this.getCategory, dispatch:this.dispatch, getFlowsOfDay:this.getFlowsOfDay}}>
                 {this.props.children}
             </AppContext.Provider>
         )
