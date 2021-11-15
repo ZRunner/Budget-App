@@ -8,6 +8,11 @@ const options = {
     radius: 2,
     normalized: true,
     spanGaps: true,
+    plugins: {
+        legend: {
+            position: 'right'
+        }
+    }
 }
 
 class AccountsHistoryGraph extends Component {
@@ -26,7 +31,6 @@ class AccountsHistoryGraph extends Component {
     }
 
     componentDidMount() {
-        console.debug("MOUNTED")
         this.componentDidUpdate();
     }
 
@@ -115,7 +119,7 @@ class AccountsHistoryGraph extends Component {
     render() {
         return (
             <>
-                {this.state.data.datasets.length > 0 ?
+                {this.state.data.datasets != null ?
                     <Line data={this.state.data} options={options} /> :
                     null
                 }

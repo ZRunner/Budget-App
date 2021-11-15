@@ -9,6 +9,11 @@ const options = {
   parsing: false,
   normalized: true,
   spanGaps: true,
+  plugins: {
+    legend: {
+        position: 'right'
+    }
+}
 }
 
 function createDataset(earnings, expenses) {
