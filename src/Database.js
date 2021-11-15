@@ -46,6 +46,11 @@ class ApiHandler {
         });
         return resp.ok;
     }
+
+    async getCurrentBalances() {
+        const resp = await fetch("/api/current_balances", {headers: {Accept}})
+        return await resp.json();
+    }
 }
 
 const apiHandler = new ApiHandler();

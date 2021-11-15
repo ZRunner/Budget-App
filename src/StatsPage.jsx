@@ -4,6 +4,7 @@ import LazyLoad from 'react-lazyload';
 import { AccountsSelect } from './Components/MiscSelects';
 import FlowDiffGraph from './Components/FlowsDiffGraph';
 import AccountsHistoryGraph from './Components/AccountsHistoryGraph';
+import AccountsDoughnutGraph from './Components/AccountsDoughnutGraph';
 
 class StatsPage extends Component {
 
@@ -34,6 +35,10 @@ class StatsPage extends Component {
     
                 <LazyLoad style={{minHeight: 400}}>
                 <AccountsHistoryGraph startDate="2021-09-01" accounts={this.state.accounts.map(acc => parseInt(acc.value))} />
+                </LazyLoad>
+
+                <LazyLoad style={{minHeight: 400}}>
+                <AccountsDoughnutGraph accounts={this.state.accounts.map(acc => parseInt(acc.value))} />
                 </LazyLoad>
             </>
         )

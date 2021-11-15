@@ -144,7 +144,7 @@ export class AppProvider extends React.Component {
 
     render() {
         return (
-            <AppContext.Provider value={{...this.state, getExpensesOnly:this.getExpensesOnly, getIncomsOnly:this.getIncomsOnly, getBalance:this.getBalance, getAccount:this.getAccount, getCategory:this.getCategory, dispatch:this.dispatch, getFlowsOfDay:this.getFlowsOfDay}}>
+            <AppContext.Provider value={{...this.state, getExpensesOnly:this.getExpensesOnly, getIncomsOnly:this.getIncomsOnly, getBalance:this.getBalance, getAccount:this.getAccount, getCategory:this.getCategory, dispatch:this.dispatch, getFlowsOfDay:this.getFlowsOfDay, getCurrentBalances:apiHandler.getCurrentBalances}}>
                 {this.props.children}
             </AppContext.Provider>
         )

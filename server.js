@@ -36,6 +36,11 @@ app.get("/api/categories", async (req, res) => {
     res.json(query);
 })
 
+app.get('/api/current_balances', async (req, res) => {
+    const query = await db.query("SELECT *, (SELECT ROUND(b.initial_balance+COALESCE(SUM(f.cost), 0), 2) FROM flows f WHERE f.bank_account=b.id) as balance FROM `bank_accounts` b;")
+    res.json(query);
+})
+
 app.get("/api/total-balance-by-day", async (req, res) => {
     const query = await db.query("SELECT f.date, (SELECT ROUND(SUM(f2.cost), 2) FROM `flows` f2 WHERE f2.date <= f.date) as costs FROM `flows` f GROUP BY `date` ORDER BY `date` ASC;");
     res.json(query);
