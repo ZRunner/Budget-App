@@ -14,7 +14,7 @@ import StatsPage from './StatsPage';
 
 const App = () => {
 
-  const [value, setValue] = React.useState('3');
+  const [value, setValue] = React.useState('1');
 
 
   return (
