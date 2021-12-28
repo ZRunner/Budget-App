@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { AppContext } from '../AppContext';
 import { CategorySelect, AccountSelect } from './MiscSelects';
 
+import {Modal, Button} from 'react-bootstrap';
+
 const initialState = {
   name: '',
   cost: '',
@@ -14,12 +16,15 @@ class AddExpenseForm extends Component {
 
   static contextType = AppContext;
 
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {
+      show: false,
       ...initialState
     }
     this.onSubmit = this.onSubmit.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.handleshow = this.handleShow.bind(this);
   }
 
   onSubmit(event) {
@@ -38,51 +43,118 @@ class AddExpenseForm extends Component {
     this.setState({
       ...initialState
     })
+    this.handleClose();
+  }
+
+  handleClose() {
+    this.setState({show: false})
+  }
+  handleShow() {
+    this.setState({show: true})
   }
 
   render() {
     return (
-      <form onSubmit={this.onSubmit}>
+      <Modal show={this.state.show} onHide={this.handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>New expense</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        <div className="row">
+          <div className="col-sm-12">
+            <label htmlFor="name">Name</label>
+            <input type="text" className="form-control" id="name" required
+              value={this.state.name} onChange={e => this.setState({ name: e.target.value })} />
+          </div>
+        </div>
+
         <div className="row">
           <div className="col-sm-6">
-            <label htmlFor="name">Name</label>  
-            <input type="text" className="form-control" id="name" required
-              value={this.state.name} onChange={e => this.setState({ name: e.target.value })}/>
-          </div>
-
-          <div className="col-sm-3">
             <label htmlFor="category">Category</label>
-            <CategorySelect value={this.state.category} onChange={e => this.setState({ category: e.target.value })}/>
+            <CategorySelect value={this.state.category} onChange={e => this.setState({ category: e.target.value })} />
           </div>
 
-          <div className="col-sm-3">
-            <label htmlFor="cost">Cost</label>
-            <input type="number" className="form-control" id="cost" step="0.01" required
-              value={this.state.cost} onChange={e => this.setState({ cost: e.target.value })}/>
+          <div className="col-sm-6">
+            <label htmlFor="account">Bank Account</label>
+            <AccountSelect value={this.state.bank_account} onChange={e => this.setState({ bank_account: e.target.value })} />
           </div>
         </div>
 
         <div className="row">
-          <div className="col-sm-3">
-            <label htmlFor="date">Date</label>  
+          <div className="col-sm-6">
+            <label htmlFor="date">Date</label>
             <input type="date" className="form-control" id="date" required
-              value={this.state.date} onChange={e => this.setState({ date: e.target.value })}/>
+              value={this.state.date} onChange={e => this.setState({ date: e.target.value })} />
           </div>
 
-          <div className="col-sm-3">
-            <label htmlFor="account">Bank Account</label>  
-            <AccountSelect value={this.state.bank_account} onChange={e => this.setState({ bank_account: e.target.value })}/>
+          <div className="col-sm-6">
+            <label htmlFor="cost">Amount</label>
+            <input type="number" className="form-control" id="cost" step="0.01" required
+              value={this.state.cost} onChange={e => this.setState({ cost: e.target.value })} />
           </div>
         </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={this.onSubmit}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
-        <div className="row">
-          <div className="col-sm">
-            <button type="submit" className="btn btn-primary mt-3">
-              Save
-            </button>
-          </div>
-        </div>
-      </form>
+      // <div className="modal fade" id="addExpenseModal" tabIndex="-1">
+      //   <div className="modal-dialog modal-dialog-centered">
+      //     <div className="modal-content">
+      //       <div className="modal-header">
+      //         <h5 className="modal-title" id="exampleModalLabel">Add Expense</h5>
+      //         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      //       </div>
+
+      //       <div className="modal-body">
+      //         <form onSubmit={this.onSubmit}>
+                // <div className="row">
+                //   <div className="col-sm-6">
+                //     <label htmlFor="name">Name</label>
+                //     <input type="text" className="form-control" id="name" required
+                //       value={this.state.name} onChange={e => this.setState({ name: e.target.value })} />
+                //   </div>
+
+                //   <div className="col-sm-3">
+                //     <label htmlFor="category">Category</label>
+                //     <CategorySelect value={this.state.category} onChange={e => this.setState({ category: e.target.value })} />
+                //   </div>
+
+                //   <div className="col-sm-3">
+                //     <label htmlFor="cost">Amount</label>
+                //     <input type="number" className="form-control" id="cost" step="0.01" required
+                //       value={this.state.cost} onChange={e => this.setState({ cost: e.target.value })} />
+                //   </div>
+                // </div>
+
+                // <div className="row">
+                //   <div className="col-sm-3">
+                //     <label htmlFor="date">Date</label>
+                //     <input type="date" className="form-control" id="date" required
+                //       value={this.state.date} onChange={e => this.setState({ date: e.target.value })} />
+                //   </div>
+
+                //   <div className="col-sm-3">
+                //     <label htmlFor="account">Bank Account</label>
+                //     <AccountSelect value={this.state.bank_account} onChange={e => this.setState({ bank_account: e.target.value })} />
+                //   </div>
+                // </div>
+
+      //           <div className="row">
+      //             <div className="col-sm">
+      //               <button type="submit" className="btn btn-primary mt-3">
+      //                 Save
+      //               </button>
+      //             </div>
+      //           </div>
+      //         </form>
+      //       </div>
+      //     </div>
+      //   </div>
+      // </div>
     )
   }
 }
