@@ -33,6 +33,10 @@ class ExpenseList extends React.Component {
     this.setState({ filteredExpenses: searchResult });
   }
 
+  sortDates(a, b) {
+    return new Date(b.date) - new Date(a.date);
+  }
+
   render() {
     return (
       <>
@@ -40,7 +44,7 @@ class ExpenseList extends React.Component {
           onChange={this.handleChange}/>
         <ul className="list-group">
           {
-            this.state.filteredExpenses.map((expense) => (
+            this.state.filteredExpenses.sort(this.sortDates).map((expense) => (
               <ExpenseItem key={expense.id} expense={expense} />
             ))
           }
