@@ -122,9 +122,12 @@ export class AppProvider extends React.Component {
     }
 
     getBalance = () => {
+        const initial = this.state.bank_accounts.reduce((total, account) => {
+            return total += account.initial_balance;
+        }, 0.0)
         return this.state.expenses.reduce((total, item) => {
             return (total += item.cost);
-          }, 0);
+          }, initial);
     }
 
     getAccount = (id) => {
