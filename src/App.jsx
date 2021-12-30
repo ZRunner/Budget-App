@@ -23,13 +23,13 @@ const App = () => {
       <h1 className="mt-3">My Wallet Manager</h1>
       <div className="row mt-3">
         <div className="col-sm">
-          <SummaryBox id="budget" name="Budget" />
+          <SummaryBox id="total" name="Current total" />
         </div>
         <div className="col-sm">
-          <SummaryBox id="remaining" name="Remaining" />
+          <SummaryBox id="1month" name="1 month earnings" />
         </div>
         <div className="col-sm">
-          <SummaryBox id="spent" name="Spent so far" />
+          <SummaryBox id="6months" name="6 months earnings" />
         </div>
       </div>
 
