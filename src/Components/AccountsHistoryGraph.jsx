@@ -16,6 +16,7 @@ const options = {
             position: 'right'
         },
         tooltip: {
+            intersect: false,
             callbacks: {
                 label: (a) => a.dataset.label+": "+CurrFormat.format(a.raw.y),
             }
