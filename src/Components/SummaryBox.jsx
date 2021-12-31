@@ -29,7 +29,7 @@ class SummaryBox extends Component {
 
   getDeltaMonths(count) {
     // get beginning date
-    let first_date = new Date();
+    const first_date = new Date();
     first_date.setMonth(first_date.getMonth() - count);
     // filter interesting values and sum them
     return this.context.expenses.filter(exp => {

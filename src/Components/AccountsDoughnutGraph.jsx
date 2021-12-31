@@ -3,10 +3,19 @@ import { Doughnut } from 'react-chartjs-2';
 
 import { AppContext } from '../AppContext';
 
+
+const CurrFormat = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' })
+
+
 const options = {
     plugins: {
         legend: {
             position: 'right'
+        },
+        tooltip: {
+            callbacks: {
+              label: (a) => a.label+": "+CurrFormat.format(a.raw),
+            }
         }
     }
 }

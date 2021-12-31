@@ -3,6 +3,9 @@ import { Line } from 'react-chartjs-2';
 
 import { AppContext } from '../AppContext';
 
+
+const CurrFormat = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' })
+
 const options = {
   pointBackgroundColor: '#fff',
   radius: 3,
@@ -11,9 +14,16 @@ const options = {
   spanGaps: true,
   plugins: {
     legend: {
-        position: 'right'
+      position: 'right'
+    },
+    tooltip: {
+      mode: 'index',
+      callbacks: {
+        footer: (a) => "total: "+CurrFormat.format(a[0].raw.y + a[1].raw.y),
+        label: (a) => a.dataset.label+": "+CurrFormat.format(a.raw.y),
+      }
     }
-}
+  }
 }
 
 function createDataset(earnings, expenses) {

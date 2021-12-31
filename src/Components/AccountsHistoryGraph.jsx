@@ -3,6 +3,9 @@ import { Line } from 'react-chartjs-2';
 
 import { AppContext } from '../AppContext';
 
+
+const CurrFormat = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' })
+
 const options = {
     pointBackgroundColor: '#fff',
     radius: 2,
@@ -11,6 +14,11 @@ const options = {
     plugins: {
         legend: {
             position: 'right'
+        },
+        tooltip: {
+            callbacks: {
+                label: (a) => a.dataset.label+": "+CurrFormat.format(a.raw.y),
+            }
         }
     }
 }
