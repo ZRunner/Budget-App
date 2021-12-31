@@ -87,7 +87,7 @@ class EarningsDoughnutGraph extends Component {
         this.context.getEarningsPerAccount(this.dateToStr(first_date)).then(res => {
             console.debug("received", res)
             if (res.length === 0) return;
-            this.setState({data: this.createDataset(res)})
+            this.setState({data: this.createDataset(res.filter(acc => this.props.accounts.includes(acc.id)))})
         })
     }
 

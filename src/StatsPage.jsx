@@ -47,7 +47,7 @@ class StatsPage extends Component {
                 <AccountsDoughnutGraph accounts={this.state.accounts.map(acc => parseInt(acc.value))} />
                 </LazyLoad>
 
-                <h4>Expenses and Incomes repartition</h4>
+                <h4>Expenses and Incomes repartition (2 months)</h4>
                 <LazyLoad style={{minHeight: 400}}>
                 <EarningsDoughnutGraph accounts={this.state.accounts.map(acc => parseInt(acc.value))} count={2} />
                 </LazyLoad>
