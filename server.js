@@ -41,6 +41,18 @@ app.get('/api/current_balances', async (req, res) => {
     res.json(query);
 })
 
+
+app.get('/api/earnings_per_account', async (req, res) => {
+    let date;
+    try {
+        date = new Date(req.query.date)
+    } catch (err) {
+        res.status(400).send(err.message);
+    }
+    const query = await db.query("SELECT b.id, b.name, b.color, (SELECT SUM(f.cost) FROM flows f WHERE f.bank_account = b.id AND f.date >= ? AND f.cost < 0) as expenses, (SELECT SUM(f.cost) FROM flows f WHERE f.bank_account = b.id AND f.date >= ? AND f.cost > 0) as incomes FROM `bank_accounts` b", [date, date])
+    res.json(query);
+})
+
 app.get("/api/total-balance-by-day", async (req, res) => {
     const query = await db.query("SELECT f.date, (SELECT ROUND(SUM(f2.cost), 2) FROM `flows` f2 WHERE f2.date <= f.date) as costs FROM `flows` f GROUP BY `date` ORDER BY `date` ASC;");
     res.json(query);

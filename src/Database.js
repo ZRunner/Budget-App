@@ -51,6 +51,11 @@ class ApiHandler {
         const resp = await fetch("/api/current_balances", {headers: {Accept}})
         return await resp.json();
     }
+
+    async getEarningsPerAccount(date) {
+        const resp = await fetch("/api/earnings_per_account?date="+date, {headers: {Accept}})
+        return await resp.json();
+    }
 }
 
 const apiHandler = new ApiHandler();
