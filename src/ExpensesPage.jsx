@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import ExpenseList from './Components/ExpenseList';
+import AddTransferForm from './Components/AddTransferForm';
 import AddExpenseForm from './Components/AddExpenseForm';
 
 import {Button} from 'react-bootstrap';
@@ -27,13 +28,14 @@ class ExpensesPage extends Component {
         return (
             <>
             <AddExpenseForm ref={this.expenseModal} />
+            <AddTransferForm ref={this.transferModal} />
 
             <div>
                 <span>
                     <Button variant="primary" onClick={this.showExpenseModal}>Add an expense</Button>
                 </span>
                 <span className="mx-1">
-                    <Button variant="primary" onClick={this.showTransferModal} disabled>Add a transfer</Button>
+                    <Button variant="primary" onClick={this.showTransferModal}>Add a transfer</Button>
                 </span>
             </div>
             

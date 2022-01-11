@@ -47,6 +47,24 @@ class ApiHandler {
         return resp.ok;
     }
 
+    async getTransfers() {
+        const resp = await fetch("/api/transfers", {headers: {Accept}});
+        return (await resp.json()).map(f => {
+            let d = new Date(f.date);
+            d = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            return {...f, date: d}
+        })
+    }
+
+    async addTransfer(transfer) {
+        const resp = await fetch("/api/transfers", {
+            method: 'POST',
+            headers: {Accept, 'content-type': 'application/json'},
+            body: JSON.stringify(transfer),
+        });
+        return resp.ok ? await resp.text() : false;
+    }
+
     async getCurrentBalances() {
         const resp = await fetch("/api/current_balances", {headers: {Accept}})
         return await resp.json();

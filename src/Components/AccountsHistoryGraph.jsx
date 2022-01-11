@@ -108,6 +108,14 @@ class AccountsHistoryGraph extends Component {
                     dayDiff.set(exp.bank_account, dayDiff.get(exp.bank_account) + exp.cost);
                 }
             }
+            for (let exp of this.context.getTransfersOfDay(day)) {
+                if (this.props.accounts.includes(exp.from_account)) {
+                    dayDiff.set(exp.from_account, dayDiff.get(exp.from_account) - exp.amount);
+                }
+                if (this.props.accounts.includes(exp.to_account)) {
+                    dayDiff.set(exp.to_account, dayDiff.get(exp.to_account) + exp.amount);
+                }
+            }
 
             let total = 0;
             dayDiff.forEach((value, acc) => {

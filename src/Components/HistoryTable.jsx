@@ -54,6 +54,14 @@ class HistoryTable extends Component {
                     dayState.set(exp.bank_account, dayState.get(exp.bank_account)+exp.cost);
                 }
             }
+            for (let exp of this.context.getTransfersOfDay(day)) {
+                if (this.props.accounts.includes(exp.from_account)) {
+                    dayState.set(exp.from_account, dayState.get(exp.from_account)-exp.amount);
+                }
+                if (this.props.accounts.includes(exp.to_account)) {
+                    dayState.set(exp.to_account, dayState.get(exp.to_account)+exp.amount);
+                }
+            }
             if (day.getMonth() !== prev_dat.getMonth()) {
                 result.push({
                     txt: prev_dat.toLocaleDateString(undefined, {month: 'long', year: 'numeric'}),

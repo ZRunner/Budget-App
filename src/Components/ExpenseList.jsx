@@ -1,6 +1,15 @@
 import React from 'react';
 import ExpenseItem from './ExpenseItem';
+import ExpenseTransfer from './ExpenseTransfer';
 import { AppContext } from '../AppContext';
+
+function equalsArrays(a, b) {
+  return a.length === b.length &&
+  a.every(function (element) {
+    return b.findIndex(eb => JSON.stringify(element) === JSON.stringify(eb)) > -1
+  });
+}
+
 
 class ExpenseList extends React.Component {
 
@@ -8,9 +17,9 @@ class ExpenseList extends React.Component {
 
   constructor (props, context) {
     super(props);
-    this.currentExpenses = context.expenses;
+    this.currentExpenses = context.expenses.concat(context.transfers);
     this.state = {
-      filteredExpenses: context.expenses
+      filteredExpenses: this.currentExpenses
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -18,10 +27,11 @@ class ExpenseList extends React.Component {
 
   // trigger list refresh when context expenses change
   componentDidUpdate() {
-    if (this.context.expenses !== this.currentExpenses) {
-      this.currentExpenses = this.context.expenses;
+    const new_expenses = this.context.expenses.concat(this.context.transfers);
+    if (!equalsArrays(new_expenses, this.currentExpenses)) {
+      this.currentExpenses = new_expenses;
       this.setState({
-        filteredExpenses: this.context.expenses
+        filteredExpenses: new_expenses
       })
     }
   }
@@ -44,9 +54,13 @@ class ExpenseList extends React.Component {
           onChange={this.handleChange}/>
         <ul className="list-group">
           {
-            this.state.filteredExpenses.sort(this.sortDates).map((expense) => (
-              <ExpenseItem key={expense.id} expense={expense} />
-            ))
+            this.state.filteredExpenses.sort(this.sortDates).map((expense) => {
+              if (expense.from_account) { // it is a transfer
+                return <ExpenseTransfer key={expense.id+"t"} expense={expense} />
+              } else { // it is a normal expense
+                return <ExpenseItem key={expense.id} expense={expense} />
+              }
+            })
           }
         </ul>
       </>

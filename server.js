@@ -37,7 +37,7 @@ app.get("/api/categories", async (req, res) => {
 })
 
 app.get('/api/current_balances', async (req, res) => {
-    const query = await db.query("SELECT *, (SELECT ROUND(b.initial_balance+COALESCE(SUM(f.cost), 0), 2) FROM flows f WHERE f.bank_account=b.id) as balance FROM `bank_accounts` b;")
+    const query = await db.query("SELECT *, (SELECT ROUND(b.initial_balance+COALESCE(SUM(f.cost), 0), 2) FROM flows f WHERE f.bank_account=b.id)-(SELECT ROUND(COALESCE(SUM(amount), 0), 2) FROM transfers t WHERE t.from_account=b.id)+(SELECT ROUND(COALESCE(SUM(amount), 0), 2) FROM transfers t WHERE t.to_account=b.id) as balance FROM `bank_accounts` b")
     res.json(query);
 })
 
@@ -129,6 +129,26 @@ app.put("/api/flows/:id", async (req, res, next) => {
         return next(err);
     }
     res.status(200).send(String(query.affectedRows));
+})
+
+
+app.get("/api/transfers", async (req, res) => {
+    const query = await db.query("SELECT * FROM transfers ORDER BY date DESC;");
+    res.json(query);
+})
+
+app.post("/api/transfers", async (req, res) => {
+    if (!req.body.name || !req.body.amount || !req.body.category || !req.body.from_account || !req.body.to_account || !req.body.date) {
+        res.status(400).send("Missing parameter");
+        return;
+    }
+    let query;
+    try {
+        query = await db.query("INSERT INTO `transfers` (`name`, `amount`, `category`, `from_account`, `to_account`, `date`) VALUES (?, ?, ?, ?, ?, ?)", [req.body.name, req.body.amount, req.body.category, req.body.from_account, req.body.to_account, req.body.date]);
+    } catch (err) {
+        return next(err);
+    }
+    res.status(200).send(String(query.insertId));
 })
 
 app.get("*", (req, res) => {

@@ -44,6 +44,21 @@ const AsyncReducer = (state, action) => {
             case 'SET_FLOWS':
                 resolve({ ...state, expenses: action.payload })
                 break;
+            case 'SET_TRANSFERS':
+                resolve({ ...state, transfers: action.payload })
+                break;
+            case 'ADD_TRANSFER':
+                apiHandler.addTransfer(action.payload).then(new_id => {
+                    if (new_id) {
+                        action.payload.id = new_id
+                        resolve({
+                            ...state,
+                            transfers: [...state.transfers, action.payload]})
+                    } else {
+                        resolve(state);
+                    }
+                })
+                break;
             case 'SET_CATEGORIES':
                 resolve({
                     ...state,
@@ -66,6 +81,7 @@ const AsyncReducer = (state, action) => {
 const initialState = {
     budget: 2000,
     expenses: [],
+    transfers: [],
     categories: [],
     bank_accounts: []
 }
@@ -90,6 +106,13 @@ export class AppProvider extends React.Component {
         .then(json => {
             return this.dispatch({
                 type: 'SET_FLOWS',
+                payload: json
+            })
+        })
+        .then(() => apiHandler.getTransfers())
+        .then(json => {
+            return this.dispatch({
+                type: 'SET_TRANSFERS',
                 payload: json
             })
         })
@@ -145,9 +168,16 @@ export class AppProvider extends React.Component {
         });
     }
 
+    getTransfersOfDay = (day) => {
+        return this.state.transfers.filter(exp => {
+            const d = new Date(exp.date)
+            return d.getDate() === day.getDate() && d.getMonth() === day.getMonth() && d.getFullYear() === day.getFullYear();
+        });
+    }
+
     render() {
         return (
-            <AppContext.Provider value={{...this.state, getExpensesOnly:this.getExpensesOnly, getIncomsOnly:this.getIncomsOnly, getBalance:this.getBalance, getAccount:this.getAccount, getCategory:this.getCategory, dispatch:this.dispatch, getFlowsOfDay:this.getFlowsOfDay, getCurrentBalances:apiHandler.getCurrentBalances, getEarningsPerAccount:apiHandler.getEarningsPerAccount}}>
+            <AppContext.Provider value={{...this.state, getExpensesOnly:this.getExpensesOnly, getIncomsOnly:this.getIncomsOnly, getBalance:this.getBalance, getAccount:this.getAccount, getCategory:this.getCategory, dispatch:this.dispatch, getFlowsOfDay:this.getFlowsOfDay, getTransfersOfDay:this.getTransfersOfDay, getCurrentBalances:apiHandler.getCurrentBalances, getEarningsPerAccount:apiHandler.getEarningsPerAccount}}>
                 {this.props.children}
             </AppContext.Provider>
         )
