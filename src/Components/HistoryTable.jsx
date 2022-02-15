@@ -30,10 +30,16 @@ class HistoryTable extends Component {
         }
     }
 
+    getMinDate() {
+        var date = new Date();
+        date.setFullYear(date.getFullYear() - 1);
+        return date
+    }
+
     constructHistory() {
         let dayState = new Map(this.context.bank_accounts.map(acc => [acc.id, acc.initial_balance]))
-        let day = new Date(this.props.startDate);
         let today = this.props.endDate ? new Date(this.props.endDate) : new Date();
+        let day = new Date(Math.max(this.getMinDate(), new Date(this.props.startDate)));
         let result = [];
 
         const getTotal = (bal) => {
