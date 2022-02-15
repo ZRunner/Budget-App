@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AppContext } from '../AppContext';
-import { CategorySelect, AccountSelect } from './MiscSelects';
+import { AccountSelect } from './MiscSelects';
 
 import {Modal, Button} from 'react-bootstrap';
 
