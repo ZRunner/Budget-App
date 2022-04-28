@@ -37,10 +37,17 @@ class ExpenseList extends React.Component {
   }
 
   handleChange(event) {
-    const searchResult = this.context.expenses.filter(
-      (exp) => exp.name.toLowerCase().includes(event.target.value) || this.context.getAccount(exp.account)?.name.toLowerCase().includes(event.target.value)
+    const searchResultExpenses = this.context.expenses.filter(
+      (exp) => exp.name.toLowerCase().includes(event.target.value)
+          || this.context.getAccount(exp.bank_account)?.name.toLowerCase().includes(event.target.value)
+          || this.context.getCategory(exp.category)?.name.toLowerCase().includes(event.target.value)
     )
-    this.setState({ filteredExpenses: searchResult });
+    const searchResultTransfers = this.context.transfers.filter(
+      (exp) => exp.name.toLowerCase().includes(event.target.value)
+          || this.context.getAccount(exp.from_account)?.name.toLowerCase().includes(event.target.value)
+          || this.context.getAccount(exp.to_account)?.name.toLowerCase().includes(event.target.value)
+    )
+    this.setState({ filteredExpenses: searchResultExpenses.concat(searchResultTransfers) });
   }
 
   sortDates(a, b) {
