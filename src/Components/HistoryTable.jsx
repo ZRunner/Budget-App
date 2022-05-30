@@ -54,7 +54,7 @@ class HistoryTable extends Component {
         let prev_dat = new Date(day);
 
         let i = 0;
-        while (day < today && i < 400) {
+        while (day <= today && i < 400) {
             for (let exp of this.context.getFlowsOfDay(day)) {
                 if (this.props.accounts.includes(exp.bank_account)) {
                     dayState.set(exp.bank_account, dayState.get(exp.bank_account)+exp.cost);
