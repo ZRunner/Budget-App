@@ -68,6 +68,10 @@ class HistoryTable extends Component {
                     dayState.set(exp.to_account, dayState.get(exp.to_account)+exp.amount);
                 }
             }
+            // fix round issues
+            dayState.forEach((val, i) => {
+                if (Math.abs(val) < 0.001) { dayState.set(i, 0.0) }
+            })
             if (day.getMonth() !== prev_dat.getMonth()) {
                 result.push({
                     txt: prev_dat.toLocaleDateString(undefined, {month: 'long', year: 'numeric'}),
