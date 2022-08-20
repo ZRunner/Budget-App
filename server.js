@@ -1,6 +1,16 @@
 const express = require('express');
+const { exit } = require('process');
 const mysql = require('promise-mysql');
 require('dotenv').config();
+
+if (process.env.DB_HOST === undefined ||
+    process.env.DB_USER === undefined ||
+    process.env.DB_PWD === undefined ||
+    process.env.DB_NAME === undefined) {
+    console.debug(`Connecting to database ${process.env.DB_HOST}:${process.env.DB_PORT || 3306} with user ${process.env.DB_USER}`);
+    console.error("Missing database info: aborting");
+    exit(1);
+}
 
 const app = express();
 
@@ -14,9 +24,10 @@ app.use(function(err, req, res, next) {
     console.error(err.stack);
     res.status(500).send('Something broke!');
 });
-  
+
 
 let db;
+console.debug(`Connecting to database ${process.env.DB_HOST}:${process.env.DB_PORT || 3306} with user ${process.env.DB_USER}`);
 mysql.createPool({host: process.env.DB_HOST, port: (process.env.DB_PORT || 3306), user: process.env.DB_USER, password: process.env.DB_PWD, database: process.env.DB_NAME})
 .then(pool => {
     console.debug("Database pool created")
