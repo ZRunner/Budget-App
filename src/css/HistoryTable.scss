@@ -22,7 +22,22 @@
         }
     }
 
-    th, td {
+    th,
+    td {
         text-align: center;
+    }
+
+    td.diff-up,
+    td.diff-down,
+    td.diff-equ {
+        text-align: left;
+        padding-left: 2%;
+
+        span {
+            margin-left: 6px;
+            min-width: 65px;
+            display: inline-block;
+            text-align: right;
+        }
     }
 }

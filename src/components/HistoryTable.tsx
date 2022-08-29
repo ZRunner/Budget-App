@@ -172,15 +172,21 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
 
                             <td>{format.format(row.total!)}</td>
 
-                            {row.diff! > 0 ?
-
-                                <td className="diff-up"><FaArrowUp /> {format.format(row.diff!)}</td> : (
-                                    row.diff! < 0 ?
-
-                                        <td className="diff-down"><FaArrowDown /> {format.format(row.diff!)}</td> :
-
-                                        <td className="diff-equ"><FaEquals size="1em" /> {format.format(row.diff!)}</td>
-                                )}
+                            {row.diff! > 0
+                                ? <td className="diff-up">
+                                    <FaArrowUp />
+                                    <span>{format.format(row.diff!)}</span>
+                                </td>
+                                : row.diff! < 0
+                                    ? <td className="diff-down">
+                                        <FaArrowDown />
+                                        <span>{format.format(row.diff!)}</span>
+                                    </td>
+                                    : <td className="diff-equ">
+                                        <FaEquals size="1em" />
+                                        <span>{format.format(row.diff!)}</span>
+                                    </td>
+                            }
                         </tr>
                 ))}
             </tbody>
