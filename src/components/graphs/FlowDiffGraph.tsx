@@ -3,6 +3,7 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Legend, Tooltip } from "chart.js";
 import { getFlows } from '../../services/redux/moneySlice';
 import { useAppSelector } from '../../services/redux/store';
+import { Flow } from '../../types';
 
 interface FlowDiffGraphProps {
     startDate: string;
@@ -26,6 +27,12 @@ interface Point {
 
 const CurrFormat = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' })
 
+const getTime = (day: string | Date) => {
+    let parsed = new Date(day);
+    parsed.setMinutes(parsed.getMinutes() + parsed.getTimezoneOffset());
+    return parsed.getTime();
+}
+
 
 export default function FlowDiffGraph({ startDate, endDate, bankAccounts }: FlowDiffGraphProps) {
     const flows = useAppSelector(getFlows);
@@ -35,23 +42,30 @@ export default function FlowDiffGraph({ startDate, endDate, bankAccounts }: Flow
         start.setHours(0, 0, 0, 0);
         const end = endDate ? new Date(endDate) : new Date();
         end.setHours(0, 0, 0, 0);
+        const result = new Map<number, Flow[]>();
 
-        return flows.filter(flow => {
-            const d = new Date(flow.date);
-            return bankAccounts.includes(flow.bank_account)
-                && d > start && d < end
-        })
+        flows
+            .filter(flow => {
+                const d = new Date(flow.date);
+                return bankAccounts.includes(flow.bank_account)
+                    && d > start && d < end
+            })
+            .forEach(flow => {
+                const time = getTime(flow.date);
+                const previous = result.get(time);
+                if (previous === undefined) {
+                    result.set(time, [flow])
+                } else {
+                    previous.push(flow);
+                }
+            })
+        return result;
     }, [flows, startDate, endDate, bankAccounts])
 
     const data = useMemo(() => {
         console.debug("calculating FlowDiffGraph")
         function getFlowsOfDay(day: Date) {
-            return filteredFlows.filter(flow => {
-                const d = new Date(flow.date)
-                return d.getUTCDate() === day.getDate()
-                    && d.getMonth() === day.getMonth()
-                    && d.getFullYear() === day.getFullYear();
-            });
+            return filteredFlows.get(day.getTime()) ?? []
         }
 
         let day = new Date(startDate);
@@ -71,13 +85,15 @@ export default function FlowDiffGraph({ startDate, endDate, bankAccounts }: Flow
                 else spent += flow.cost;
             }
 
-            labels.push(day.toLocaleDateString(undefined, { timeZone: "UTC" }));
+            const formatedDay = day.toLocaleDateString(undefined, { timeZone: "UTC" });
+
+            labels.push(formatedDay);
             expensesData.push({
-                x: day.toLocaleDateString(undefined, { timeZone: "UTC" }),
+                x: formatedDay,
                 y: Math.round(spent * 100) / 100,
             })
             earningsData.push({
-                x: day.toLocaleDateString(undefined, { timeZone: "UTC" }),
+                x: formatedDay,
                 y: Math.round(earned * 100) / 100,
             })
 

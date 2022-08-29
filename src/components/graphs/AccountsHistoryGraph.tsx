@@ -27,6 +27,12 @@ interface Point {
 
 const CurrFormat = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' })
 
+const getTime = (day: string | Date) => {
+    let parsed = new Date(day);
+    parsed.setMinutes(parsed.getMinutes() + parsed.getTimezoneOffset());
+    return parsed.getTime();
+}
+
 
 export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts }: AccountsHistoryGraphProps) {
     const flows = useAppSelector(getFlows);
@@ -43,18 +49,24 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
     }
 
     const sortedFlows = useMemo(() => {
-        const result = new Map<Date, Flow[]>();
-        flows.forEach(flow => {
-            const d = new Date(flow.date);
-            const previous = result.get(d);
-            if (previous === undefined) {
-                result.set(d, [flow])
-            } else {
-                previous.push(flow);
-            }
-        })
+        const result = new Map<number, Flow[]>();
+        flows
+            .filter(flow => bankAccounts.includes(flow.bank_account))
+            .forEach(flow => {
+                const time = getTime(flow.date);
+                const previous = result.get(time);
+                if (previous === undefined) {
+                    result.set(time, [flow])
+                } else {
+                    previous.push(flow);
+                }
+            })
         return result;
-    }, [flows])
+    }, [flows, bankAccounts])
+
+    const filteredTransfers = useMemo(() => (
+        transfers.filter(tr => bankAccounts.includes(tr.from_account) || bankAccounts.includes(tr.to_account))
+    ), [transfers, bankAccounts])
 
     const data = useMemo(() => {
         console.debug("calculating AccountsHistoryGraph")
@@ -86,18 +98,13 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
         }
 
         function getFlowsOfDay(day: Date) {
-            return (sortedFlows.get(day) ?? [])
-                .filter(flow => bankAccounts.includes(flow.bank_account));
+            return sortedFlows.get(day.getTime()) ?? []
         }
 
         function getTransfersOfDay(day: Date) {
-            return transfers.filter(transfer => {
+            return filteredTransfers.filter(transfer => {
                 const d = new Date(transfer.date)
-                return (
-                    bankAccounts.includes(transfer.from_account)
-                    || bankAccounts.includes(transfer.to_account)
-                )
-                    && d.getUTCDate() === day.getDate()
+                return d.getUTCDate() === day.getDate()
                     && d.getMonth() === day.getMonth()
                     && d.getFullYear() === day.getFullYear();
             });
@@ -151,7 +158,7 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
                     backgroundColor: account!.color,
                 }))
         }
-    }, [startDate, endDate, bankAccounts, flows, transfers, accounts])
+    }, [startDate, endDate, bankAccounts, sortedFlows, transfers, accounts])
 
     return (
         <Line
