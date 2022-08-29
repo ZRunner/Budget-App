@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2021",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+  },
+  "files": [
+    "server.ts"
+  ]
+}

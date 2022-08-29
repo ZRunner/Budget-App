@@ -1,39 +1,50 @@
 {
-  "name": "budget-tracker",
+  "name": "my-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.5.0",
-    "@emotion/styled": "^11.9.3",
-    "@mui/lab": "^5.0.0-alpha.92",
-    "@mui/material": "^5.1.0",
-    "@testing-library/jest-dom": "^5.15.0",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "bootstrap": "^5.2.0",
-    "chart.js": "^3.8.2",
-    "dotenv": "^10.0.0",
-    "express": "^4.18.1",
-    "http-proxy-middleware": "^2.0.6",
-    "promise-mysql": "^5.2.0",
-    "react": "^17.0.2",
-    "react-bootstrap": "^2.0.4",
-    "react-chartjs-2": "^3.3.0",
-    "react-dom": "^17.0.2",
-    "react-icons": "^4.3.1",
-    "react-lazyload": "^3.2.0",
+    "@emotion/react": "11.10.0",
+    "@emotion/styled": "11.10.0",
+    "@mui/lab": "5.0.0-alpha.96",
+    "@mui/material": "5.10.2",
+    "@reduxjs/toolkit": "1.8.5",
+    "@testing-library/jest-dom": "5.16.5",
+    "@testing-library/react": "13.3.0",
+    "@testing-library/user-event": "13.5.0",
+    "bootstrap": "5.2.0",
+    "chroma-js": "^2.4.2",
+    "express": "4.18.1",
+    "http-proxy-middleware": "2.0.6",
+    "promise-mysql": "5.2.0",
+    "react": "18.2.0",
+    "react-bootstrap": "2.5.0",
+    "react-chartjs-2": "4.3.1",
+    "react-dom": "18.2.0",
+    "react-icons": "4.4.0",
+    "react-redux": "8.0.2",
     "react-scripts": "5.0.1",
-    "react-select": "^5.2.1",
-    "sass": "^1.54.0",
-    "web-vitals": "^1.1.2"
+    "react-select": "5.4.0",
+    "sass": "1.54.5",
+    "typescript": "4.8.2",
+    "web-vitals": "2.1.4"
   },
+  "devDependencies": {
+    "@types/chroma-js": "2.1.4",
+    "@types/jest": "27.5.2",
+    "@types/node": "16.11.56",
+    "@types/react": "18.0.17",
+    "@types/react-dom": "18.0.6",
+    "npm-run-all": "4.1.5"
+  },
+  "proxy": "http://localhost:8080",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "web": "react-scripts start",
+    "build-web": "react-scripts build",
     "eject": "react-scripts eject",
     "server": "node server.js",
-    "dev": "run-p server start"
+    "build-server": "npx tsc -p ./tsconfig-srv.json",
+    "prestart": "npm run build-server",
+    "start": "run-p server web"
   },
   "eslintConfig": {
     "extends": [
@@ -52,8 +63,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "npm-run-all": "^4.1.5"
   }
 }
