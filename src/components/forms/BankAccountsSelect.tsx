@@ -2,11 +2,8 @@ import { useEffect, useMemo } from "react";
 import Select, { StylesConfig } from "react-select";
 import chroma from 'chroma-js';
 import { getBankAccounts } from "../../services/redux/moneySlice";
-import { useAppSelector } from "../../services/redux/store";
-
-interface BankAccountsSelectProps {
-    onChange: (values: readonly Option[]) => void;
-}
+import { useAppDispatch, useAppSelector } from "../../services/redux/store";
+import { getSelectedBankAccounts, getSelectionInitialized, setSelectedBankAccounts } from "../../services/redux/contextSlice";
 
 interface Option {
     value: number;
@@ -36,8 +33,11 @@ const colourStyles: StylesConfig<Option> = {
     }),
 };
 
-export default function BankAccountsSelect({ onChange }: BankAccountsSelectProps) {
+export default function BankAccountsSelect() {
+    const dispatch = useAppDispatch();
     const bank_accounts = useAppSelector(getBankAccounts);
+    const selectedBankAccounts = useAppSelector(getSelectedBankAccounts);
+    const isSelectionInitialized = useAppSelector(getSelectionInitialized);
 
     const options: Option[] = useMemo(() => (
         bank_accounts.map(acc => ({
@@ -47,12 +47,27 @@ export default function BankAccountsSelect({ onChange }: BankAccountsSelectProps
         }))
     ), [bank_accounts])
 
-    useEffect(() => { onChange(options) }, [options, onChange])
+    useEffect(() => {
+        if (!isSelectionInitialized) {
+            dispatch(setSelectedBankAccounts({
+                accounts: bank_accounts.map(acc => acc.id),
+                isInit: true,
+            }))
+        }
+    }, [options, isSelectionInitialized])
+
+    const onChange = (values: readonly Option[]) => {
+        const ids = values.map(opt => opt.value);
+        dispatch(setSelectedBankAccounts({
+            accounts: ids,
+            isInit: false,
+        }))
+    }
 
     return <Select
-        defaultValue={options}
-        options={options}
+        value={options.filter(opt => selectedBankAccounts.includes(opt.value))}
         onChange={onChange}
+        options={options}
         styles={colourStyles}
         isMulti
     />

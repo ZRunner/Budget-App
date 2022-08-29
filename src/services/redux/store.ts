@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
+import contextSlice from './contextSlice'
 import moneySlice from './moneySlice'
 
 export const store = configureStore({
     reducer: {
         money: moneySlice,
+        context: contextSlice,
     },
 })
 

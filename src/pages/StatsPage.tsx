@@ -1,19 +1,17 @@
-import { Suspense, useState, lazy, useCallback } from 'react';
+import { Suspense, lazy } from 'react';
+import { useSelector } from 'react-redux';
 import BankAccountsSelect from '../components/forms/BankAccountsSelect';
 import AccountsDoughnutGraph from '../components/graphs/AccountsDoughnutGraph';
 import AccountsHistoryGraph from '../components/graphs/AccountsHistoryGraph';
 import EarningsDoughnutGraph from '../components/graphs/EarningsDoughnutGraph';
 import '../css/StatsPage.scss';
+import { getSelectedBankAccounts } from '../services/redux/contextSlice';
 
 const FlowDiffGraph = lazy(() => import('../components/graphs/FlowDiffGraph'));
 
 
 export function StatsPage() {
-    const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
-
-    const handleSelectChange = useCallback((values: readonly { value: number }[]) => {
-        setSelectedAccounts(values.map(value => value.value));
-    }, [])
+    const selectedAccounts = useSelector(getSelectedBankAccounts);
 
     return (
         <div id="statspage">
@@ -21,7 +19,7 @@ export function StatsPage() {
 
             <div className="row mt-3 mb-2">
                 <label className="col-form-label">Select accounts:</label>
-                <BankAccountsSelect onChange={handleSelectChange} />
+                <BankAccountsSelect />
             </div>
 
             <h4>Expenses and Incomes history</h4>
