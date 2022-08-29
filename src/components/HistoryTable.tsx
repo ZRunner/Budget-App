@@ -34,7 +34,7 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
         const day = max < new Date(startDate) ? new Date(startDate) : max;
         day.setHours(0, 0, 0, 0);
         return day;
-    }, [startDate]);
+    }, [startDate, lastDay]);
 
     // load accounts at the start of the history
     useEffect(() => {

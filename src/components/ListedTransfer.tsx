@@ -6,7 +6,7 @@ import { Transfer } from "../types";
 
 import '../css/ExpenseItem.scss';
 import { useAppSelector } from "../services/redux/store";
-import { getBankAccount, getCategory } from "../services/redux/moneySlice";
+import { getBankAccount } from "../services/redux/moneySlice";
 
 
 interface ListedTransferProps {
@@ -17,7 +17,6 @@ export default function ListedTransfer({ transfer }: ListedTransferProps) {
     const { deleteTransferCommand } = useTransferCommands();
     const fromAccount = useAppSelector(state => getBankAccount(state, transfer.from_account))
     const toAccount = useAppSelector(state => getBankAccount(state, transfer.to_account))
-    const category = useAppSelector(state => getCategory(state, transfer.category))
     const format = useCurrencyFormat();
 
     const formatedDate = useMemo(() =>
