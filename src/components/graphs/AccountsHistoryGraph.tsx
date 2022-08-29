@@ -3,7 +3,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { getBankAccounts, getFlows, getTransfers } from '../../services/redux/moneySlice';
 import { useAppSelector } from '../../services/redux/store';
 import { useMemo } from 'react';
-import { BankAccount } from '../../types';
+import { BankAccount, Flow } from '../../types';
 
 interface AccountsHistoryGraphProps {
     startDate: string;
@@ -42,6 +42,20 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
         return result
     }
 
+    const sortedFlows = useMemo(() => {
+        const result = new Map<Date, Flow[]>();
+        flows.forEach(flow => {
+            const d = new Date(flow.date);
+            const previous = result.get(d);
+            if (previous === undefined) {
+                result.set(d, [flow])
+            } else {
+                previous.push(flow);
+            }
+        })
+        return result;
+    }, [flows])
+
     const data = useMemo(() => {
         console.debug("calculating AccountsHistoryGraph")
         const accountsMap = getAccountsMap();
@@ -62,23 +76,18 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
         let today = endDate ? new Date(endDate) : new Date();
         today.setHours(0, 0, 0, 0);
 
-        function addValue(acc_name: number | "total", day: Date, value: number) {
-            let res = result.get(acc_name);
+        function addValue(acc_id: number | "total", day: string, value: number) {
+            let res = result.get(acc_id);
             if (res === undefined) return;
             res.push({
-                x: day.toLocaleDateString(undefined, { timeZone: "UTC" }),
+                x: day,
                 y: value
             })
         }
 
         function getFlowsOfDay(day: Date) {
-            return flows.filter(flow => {
-                const d = new Date(flow.date)
-                return bankAccounts.includes(flow.bank_account)
-                    && d.getUTCDate() === day.getDate()
-                    && d.getMonth() === day.getMonth()
-                    && d.getFullYear() === day.getFullYear();
-            });
+            return (sortedFlows.get(day) ?? [])
+                .filter(flow => bankAccounts.includes(flow.bank_account));
         }
 
         function getTransfersOfDay(day: Date) {
@@ -116,15 +125,16 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
             }
 
             let total = 0;
+            const formatedDay = day.toLocaleDateString(undefined, { timeZone: "UTC" });
             dayDiff.forEach((value, acc) => {
                 if (value === undefined) return;
                 const r_value = Math.round(value * 1000) / 1000
-                addValue(acc, day, r_value);
+                addValue(acc, formatedDay, r_value);
                 balancePerAcc.set(acc, r_value);
                 total += r_value
             })
-            addValue('total', day, total);
-            labels.push(day.toLocaleDateString(undefined, { timeZone: "UTC" }));
+            addValue('total', formatedDay, total);
+            labels.push(formatedDay);
 
             day.setDate(day.getDate() + 1);
         }
