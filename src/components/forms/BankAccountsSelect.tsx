@@ -54,7 +54,7 @@ export default function BankAccountsSelect() {
                 isInit: true,
             }))
         }
-    }, [options, isSelectionInitialized])
+    }, [options, isSelectionInitialized, bank_accounts, dispatch])
 
     const onChange = (values: readonly Option[]) => {
         const ids = values.map(opt => opt.value);
