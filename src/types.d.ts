@@ -10,6 +10,7 @@ export interface BankAccount {
     creation_date: string;
     initial_balance: number;
     color: string;
+    currency: string;
 }
 
 
@@ -58,6 +59,9 @@ export interface EarningPerAccount {
     id: number;
     name: string;
     color: string;
+    currency: string;
     expenses: number | null;
     incomes: number | null;
 }
+
+export type CurrencyRate = { [x: string]: number }

@@ -1,4 +1,4 @@
-import { Balance, BankAccount, Category, EarningPerAccount, Flow, FlowInput, Transfer, TransferInput } from "../types";
+import { Balance, BankAccount, Category, CurrencyRate, EarningPerAccount, Flow, FlowInput, Transfer, TransferInput } from "../types";
 import { formatDate } from "./utils";
 
 const Accept = 'application/json';
@@ -87,6 +87,26 @@ class ApiHandler {
     async getEarningsPerAccount(date: string): Promise<EarningPerAccount[]> {
         const resp = await fetch("/api/earnings_per_account?date=" + date, { headers: { Accept } })
         return await resp.json();
+    }
+
+    async get_currency_rates(): Promise<CurrencyRate> {
+        const resp = await fetch("/api/currency_rates");
+        const txt = await resp.text();
+        const parsedData = new DOMParser().parseFromString(txt, 'application/xml');
+        const cubes = Object.values(parsedData.getElementsByTagName('Cube'));
+
+        const data = cubes.map(el => {
+            const currency = el.attributes.getNamedItem('currency')
+            const rate = el.attributes.getNamedItem('rate')
+            if (currency !== null && rate !== null) {
+                return {
+                    [currency.value]: parseFloat(rate.value)
+                }
+            }
+            return undefined;
+        }).filter(el => el !== undefined) as { [x: string]: number; }[];
+
+        return Object.assign({ EUR: 1.0 }, ...data)
     }
 }
 

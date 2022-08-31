@@ -21,25 +21,28 @@ function App() {
     setPage(value);
   }
 
-  // load data from database
   useEffect(() => {
+    // load data from database
     console.log("Loading data from database...")
     apiHandler.getFlows()
       .then(json => {
         dispatch(setFlows(json));
       })
-      .then(() => apiHandler.getTransfers())
+    apiHandler.getTransfers()
       .then(json => {
         dispatch(setTransfers(json));
       })
-      .then(() => apiHandler.getBankAccounts())
+    apiHandler.getBankAccounts()
       .then(json => {
         dispatch(setBankAccounts(json));
       })
-      .then(() => apiHandler.getCategories())
+    apiHandler.getCategories()
       .then(json => {
         dispatch(setCategories(json));
       })
+
+    // load currencies values
+    apiHandler.get_currency_rates().then(console.log)
   }, [dispatch])
 
   return (

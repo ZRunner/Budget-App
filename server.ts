@@ -1,6 +1,7 @@
 import express, { ErrorRequestHandler, Request } from 'express'
 import { exit } from 'process'
 import mysql from 'promise-mysql'
+import https from 'https';
 import { FlowInput, TransferInput } from "./src/types";
 require('dotenv').config({ path: __dirname + '/.env' });
 
@@ -128,23 +129,8 @@ app.get('/api/earnings_per_account', async (req: Request<unknown, unknown, unkno
         res.status(400).send(err.message);
         return;
     }
-    const query = await db.query("SELECT b.id, b.name, b.color, (SELECT ROUND(SUM(f.cost), 2) FROM flows f WHERE f.bank_account = b.id AND f.date >= ? AND f.cost < 0) as expenses, (SELECT ROUND(SUM(f.cost), 2) FROM flows f WHERE f.bank_account = b.id AND f.date >= ? AND f.cost > 0) as incomes FROM `bank_accounts` b", [date, date])
+    const query = await db.query("SELECT b.id, b.name, b.color, b.currency, (SELECT ROUND(SUM(f.cost), 2) FROM flows f WHERE f.bank_account = b.id AND f.date >= ? AND f.cost < 0) as expenses, (SELECT ROUND(SUM(f.cost), 2) FROM flows f WHERE f.bank_account = b.id AND f.date >= ? AND f.cost > 0) as incomes FROM `bank_accounts` b", [date, date])
     res.json(query);
-})
-
-app.get("/api/total-balance-by-day", async (req, res) => {
-    const query = await db.query("SELECT f.date, (SELECT ROUND(SUM(f2.cost), 2) FROM `flows` f2 WHERE f2.date <= f.date) as costs FROM `flows` f GROUP BY `date` ORDER BY `date` ASC;");
-    res.json(query);
-})
-
-app.get("/api/flows-by-day/:day", async (req, res) => {
-    // check for the date
-    if (!new Date(req.params.day).getDay()) {
-        res.status(400).send("Invalid date");
-        return;
-    }
-    const query = await db.query("SELECT f.date, ROUND(SUM(f.cost), 2) as costs FROM `flows` f WHERE f.date = ?;", [req.params.day]);
-    res.json(query[0].date ? query[0] : { date: req.params.day, costs: 0.0 });
 })
 
 app.get("/api/flows", async (req, res) => {
@@ -231,6 +217,28 @@ app.delete("/api/transfers/:id", async (req, res, next) => {
         return next(err);
     }
     res.status(200).send(String(query.affectedRows));
+})
+
+app.get("/api/currency_rates", async (req, res, next) => {
+    https.get('https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml', (resp) => {
+        let data = '';
+
+        // A chunk of data has been received.
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+
+        // The whole response has been received. Print out the result.
+        resp.on('end', () => {
+            res.status(200)
+                .header("Content-Type", resp.headers["content-type"])
+                .send(`${data}`)
+        });
+
+
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+    });
 })
 
 
