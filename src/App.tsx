@@ -8,7 +8,7 @@ import SummaryBox from './components/SummaryBox';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import apiHandler from './services/database';
 import { useAppDispatch } from './services/redux/store';
-import { setBankAccounts, setCategories, setFlows, setTransfers } from './services/redux/moneySlice';
+import { setBankAccounts, setCategories, setCurrencyRates, setFlows, setTransfers } from './services/redux/moneySlice';
 import ExpensesPage from './pages/ExpensesPage';
 import { StatsPage } from './pages/StatsPage';
 import HistoryPage from './pages/HistoryPage';
@@ -42,7 +42,10 @@ function App() {
       })
 
     // load currencies values
-    apiHandler.get_currency_rates().then(console.log)
+    apiHandler.get_currency_rates()
+      .then(rates => {
+        dispatch(setCurrencyRates(rates));
+      })
   }, [dispatch])
 
   return (

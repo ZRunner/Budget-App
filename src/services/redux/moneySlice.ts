@@ -1,6 +1,6 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { Category, BankAccount, Flow, Transfer } from '../../types';
+import { Category, BankAccount, Flow, Transfer, CurrencyRate } from '../../types';
 
 export interface MoneyState {
     budget: number;
@@ -8,6 +8,7 @@ export interface MoneyState {
     bank_accounts: BankAccount[];
     flows: Flow[];
     transfers: Transfer[];
+    currencyRates: CurrencyRate;
 }
 
 const initialState: MoneyState = {
@@ -15,7 +16,8 @@ const initialState: MoneyState = {
     flows: [],
     transfers: [],
     categories: [],
-    bank_accounts: []
+    bank_accounts: [],
+    currencyRates: {},
 }
 
 const getSlice = (state: { money: MoneyState }) => state.money;
@@ -27,6 +29,8 @@ export const getTransfers = createSelector(getSlice, state => state.transfers);
 export const getBankAccounts = createSelector(getSlice, state => state.bank_accounts);
 
 export const getCategories = createSelector(getSlice, state => state.categories);
+
+export const getCurrencyRates = createSelector(getSlice, state => state.currencyRates);
 
 /**
  * Get the total amount of currently owned money accross all acccounts
@@ -136,7 +140,13 @@ export const moneySlice = createSlice({
                 ...state,
                 bank_accounts: action.payload,
             }
-        }
+        },
+        setCurrencyRates: (state, action: PayloadAction<CurrencyRate>) => {
+            return {
+                ...state,
+                currencyRates: action.payload,
+            }
+        },
     },
 })
 
@@ -149,7 +159,8 @@ export const {
     setFlows,
     setTransfers,
     setCategories,
-    setBankAccounts
+    setBankAccounts,
+    setCurrencyRates,
 } = moneySlice.actions;
 
 export default moneySlice.reducer;
