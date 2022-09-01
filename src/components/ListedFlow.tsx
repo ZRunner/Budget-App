@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { TiDelete } from 'react-icons/ti';
 import { BsPencilFill } from 'react-icons/bs';
-import { useCurrencyFormat, useFlowCommands } from "../services/hooks";
+import { useFlowCommands } from "../services/hooks";
 import { Flow } from "../types";
 
 import '../css/ExpenseItem.scss';
@@ -17,7 +17,7 @@ export default function ListedFlow({ flow }: ListedFlowProps) {
     const { deleteFlowCommand } = useFlowCommands();
     const bankAccount = useAppSelector(state => getBankAccount(state, flow.bank_account))
     const category = useAppSelector(state => getCategory(state, flow.category))
-    const format = useCurrencyFormat();
+    const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value)
 
     const formatedDate = useMemo(() =>
         new Date(flow.date).toLocaleDateString(undefined, { timeZone: "UTC" }),
@@ -25,7 +25,7 @@ export default function ListedFlow({ flow }: ListedFlowProps) {
     )
 
     const formatedAmount = useMemo(() =>
-        format.format(flow.cost),
+        format(flow.cost, bankAccount?.currency ?? 'EUR'),
         [format, flow.cost]
     )
 

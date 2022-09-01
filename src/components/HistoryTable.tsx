@@ -1,5 +1,4 @@
 import { FaEquals, FaArrowDown, FaArrowUp } from 'react-icons/fa';
-import { useCurrencyFormat } from '../services/hooks';
 import '../css/HistoryTable.scss';
 import { useAppSelector } from '../services/redux/store';
 import { getFlows, getTransfers } from '../services/redux/moneySlice';
@@ -14,10 +13,12 @@ interface HistoryTableProps {
 }
 
 export default function HistoryTable({ startDate, endDate, bankAccounts }: HistoryTableProps) {
-    const format = useCurrencyFormat();
     const [accounts, setAccounts] = useState<Balance[]>([]);
     const flows = useAppSelector(getFlows);
     const transfers = useAppSelector(getTransfers);
+
+    const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value);
+    const currenciesMap = new Map(accounts.map(acc => [acc.id, acc.currency]));
 
     // last day of the history, either today or the provided "endDate"
     const lastDay = useMemo(() => {
@@ -167,24 +168,24 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
                             <td>{row.day?.toLocaleDateString(undefined, { timeZone: "UTC" })}</td>
 
                             {bankAccounts.map(i => (
-                                <td key={i}>{format.format(row.bal!.get(i)!)}</td>
+                                <td key={i}>{format(row.bal!.get(i)!, currenciesMap.get(i) ?? 'EUR')}</td>
                             ))}
 
-                            <td>{format.format(row.total!)}</td>
+                            <td>{format(row.total!, 'EUR')}</td>
 
                             {row.diff! > 0
                                 ? <td className="diff-up">
                                     <FaArrowUp />
-                                    <span>{format.format(row.diff!)}</span>
+                                    <span>{format(row.diff!, 'EUR')}</span>
                                 </td>
                                 : row.diff! < 0
                                     ? <td className="diff-down">
                                         <FaArrowDown />
-                                        <span>{format.format(row.diff!)}</span>
+                                        <span>{format(row.diff!, 'EUR')}</span>
                                     </td>
                                     : <td className="diff-equ">
                                         <FaEquals size="1em" />
-                                        <span>{format.format(row.diff!)}</span>
+                                        <span>{format(row.diff!, 'EUR')}</span>
                                     </td>
                             }
                         </tr>

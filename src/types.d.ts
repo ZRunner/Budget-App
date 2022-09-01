@@ -36,6 +36,7 @@ export interface Transfer {
     id: number;
     name: string;
     amount: number;
+    currency: string;
     category: number;
     from_account: number;
     to_account: number;
@@ -45,6 +46,7 @@ export interface Transfer {
 export interface TransferInput {
     name: string;
     amount: number;
+    currency: string;
     category: number;
     from_account: number;
     to_account: number;

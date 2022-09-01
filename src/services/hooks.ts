@@ -1,14 +1,7 @@
-import { useMemo } from "react";
 import { Flow, FlowInput, TransferInput } from "../types";
 import apiHandler from "./database";
 import { addFlow, addTransfer, deleteFlow, deleteTransfer, editFlow } from "./redux/moneySlice";
 import { useAppDispatch } from "./redux/store";
-
-export function useCurrencyFormat() {
-    return useMemo(() => {
-        return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' })
-    }, [])
-}
 
 export function useFlowCommands() {
     const dispatch = useAppDispatch();

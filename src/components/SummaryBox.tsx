@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useCurrencyFormat } from '../services/hooks';
 import { getBalance, getFlows } from '../services/redux/moneySlice';
 import { useAppSelector } from '../services/redux/store';
 
@@ -10,7 +9,6 @@ interface SummaryBoxProps {
 export default function SummaryBox({ id }: SummaryBoxProps) {
     const flows = useAppSelector(getFlows);
     const total = useAppSelector(getBalance);
-    const format = useCurrencyFormat();
     const name = useMemo(() => {
         switch (id) {
             case "total":
@@ -21,6 +19,8 @@ export default function SummaryBox({ id }: SummaryBoxProps) {
                 return "6 months earnings";
         }
     }, [id])
+
+    const format = (value: number) => new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(value);
 
     const value = useMemo(() => {
         function getDeltaMonths(count: number) {
@@ -58,6 +58,6 @@ export default function SummaryBox({ id }: SummaryBoxProps) {
     }, [value])
 
     return <div className={`alert alert-${color}`}>
-        <span>{name}: {format.format(value)}</span>
+        <span>{name}: {format(value)}</span>
     </div>
 }

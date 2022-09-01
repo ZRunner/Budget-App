@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { TiDelete } from 'react-icons/ti';
 import { BsPencilFill } from 'react-icons/bs';
-import { useCurrencyFormat, useTransferCommands } from "../services/hooks";
+import { useTransferCommands } from "../services/hooks";
 import { Transfer } from "../types";
 
 import '../css/ExpenseItem.scss';
@@ -17,7 +17,7 @@ export default function ListedTransfer({ transfer }: ListedTransferProps) {
     const { deleteTransferCommand } = useTransferCommands();
     const fromAccount = useAppSelector(state => getBankAccount(state, transfer.from_account))
     const toAccount = useAppSelector(state => getBankAccount(state, transfer.to_account))
-    const format = useCurrencyFormat();
+    const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value)
 
     const formatedDate = useMemo(() =>
         new Date(transfer.date).toLocaleDateString(undefined, { timeZone: "UTC" }),
@@ -25,7 +25,7 @@ export default function ListedTransfer({ transfer }: ListedTransferProps) {
     )
 
     const formatedAmount = useMemo(() =>
-        format.format(transfer.amount),
+        format(transfer.amount, transfer.currency),
         [format, transfer.amount]
     )
 
@@ -45,9 +45,6 @@ export default function ListedTransfer({ transfer }: ListedTransferProps) {
                 </span>
             </div>
             <div>
-                {/* <small className="text-secondary me-2">
-                    {category?.name ?? '?'}
-                </small> */}
                 <span className="badge bg-secondary rounded-pill me-3">
                     {formatedAmount}
                 </span>

@@ -3,7 +3,6 @@ import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 import apiHandler from '../../services/database';
-import { useCurrencyFormat } from '../../services/hooks';
 import { Balance } from '../../types';
 
 interface AccountsHistoryGraphProps {
@@ -17,8 +16,9 @@ ChartJS.register(
 );
 
 export default function AccountsDoughnutGraph({ bankAccounts }: AccountsHistoryGraphProps) {
-    const format = useCurrencyFormat();
     const [balances, setBalances] = useState<Balance[]>([]);
+
+    const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value)
 
     useEffect(() => {
         let active = true
@@ -45,7 +45,7 @@ export default function AccountsDoughnutGraph({ bankAccounts }: AccountsHistoryG
 
         const labels = filteredBalances.map(acc => {
             const percent = Math.round(acc.balance / sum * 1000) / 10;
-            return `${acc.name}: ${format.format(acc.balance)} (${percent}%)`
+            return `${acc.name}: ${format(acc.balance, acc.currency)} (${percent}%)`
         })
 
         const data = {
@@ -57,7 +57,7 @@ export default function AccountsDoughnutGraph({ bankAccounts }: AccountsHistoryG
         }
 
         return [data, labels]
-    }, [jsoned, format])
+    }, [jsoned])
 
     return <Doughnut
         data={data}

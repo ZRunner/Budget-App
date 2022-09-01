@@ -1,6 +1,5 @@
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { useCurrencyFormat } from '../../services/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import apiHandler from '../../services/database';
 import { EarningPerAccount } from '../../types';
@@ -17,8 +16,9 @@ ChartJS.register(
 );
 
 export default function EarningsDoughnutGraph({ bankAccounts, monthsCount }: EarningsDoughnutGraphProps) {
-    const format = useCurrencyFormat();
     const [earningsPerAcc, setEarningsPerAcc] = useState<EarningPerAccount[]>([]);
+
+    const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value)
 
     useEffect(() => {
         let active = true
@@ -63,8 +63,8 @@ export default function EarningsDoughnutGraph({ bankAccounts, monthsCount }: Ear
             const inc = Math.round((acc.incomes ?? 0) / sum_inc * 1000) / 10;
             const exp = Math.round((acc.expenses ?? 0) / sum_exp * 1000) / 10;
             return [
-                `${acc.name}: ${format.format(acc.incomes ?? 0)} (${inc}%)`,
-                `${acc.name}: ${format.format(acc.expenses ?? 0)} (${exp}%)`
+                `${acc.name}: ${format(acc.incomes ?? 0, acc.currency)} (${inc}%)`,
+                `${acc.name}: ${format(acc.expenses ?? 0, acc.currency)} (${exp}%)`
             ]
         })
 

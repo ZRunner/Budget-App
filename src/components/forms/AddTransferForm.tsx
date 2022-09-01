@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import { useTransferCommands } from '../../services/hooks';
+import { getBankAccounts } from '../../services/redux/moneySlice';
+import { useAppSelector } from '../../services/redux/store';
 import BankAccountSelect from './BankAccountSelect';
 
 interface AddTransferFormProps {
@@ -14,24 +16,38 @@ interface AddTransferFormProps {
 
 export default function AddTransferForm({ visible, onHide }: AddTransferFormProps) {
     const { addTransferCommand } = useTransferCommands();
+    const accounts = useAppSelector(getBankAccounts);
+
     const [inputs, setInputs] = useState({
         name: "",
         amount: "",
+        currency: "",
         category: 10,
         from_account: 6,
         to_account: 3,
         date: new Date().toISOString().split('T')[0],
     })
 
+    const possibleCurrencies = useMemo(() => {
+        const candidates = accounts.filter(acc =>
+            acc.id === inputs.from_account || acc.id === inputs.to_account)
+        return [... new Set(candidates.map(acc => acc.currency))]
+    }, [accounts, inputs])
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const id = event.target.id;
         const value = event.target.value;
         setInputs({ ...inputs, [id]: value })
     }
-    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleSelectNumberChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const id = event.target.id;
         const value = event.target.value;
         setInputs({ ...inputs, [id]: Number(value) })
+    }
+    const handleSelectStringChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const id = event.target.id;
+        const value = event.target.value;
+        setInputs({ ...inputs, [id]: value })
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -39,6 +55,7 @@ export default function AddTransferForm({ visible, onHide }: AddTransferFormProp
         addTransferCommand({
             ...inputs,
             amount: Number(inputs.amount),
+            currency: inputs.currency || possibleCurrencies[0],
         })
         onHide();
     }
@@ -67,7 +84,7 @@ export default function AddTransferForm({ visible, onHide }: AddTransferFormProp
                             <Form.Label>From Account</Form.Label>
                             <BankAccountSelect
                                 value={inputs.from_account}
-                                onChange={handleSelectChange}
+                                onChange={handleSelectNumberChange}
                             />
                         </Form.Group>
 
@@ -75,7 +92,7 @@ export default function AddTransferForm({ visible, onHide }: AddTransferFormProp
                             <Form.Label>To Account</Form.Label>
                             <BankAccountSelect
                                 value={inputs.to_account}
-                                onChange={handleSelectChange}
+                                onChange={handleSelectNumberChange}
                             />
                         </Form.Group>
                     </Row>
@@ -101,6 +118,20 @@ export default function AddTransferForm({ visible, onHide }: AddTransferFormProp
                                 onChange={handleChange}
                                 required
                             />
+                        </Form.Group>
+
+                        <Form.Group as={Col} controlId='currency'>
+                            <Form.Label>Currency</Form.Label>
+                            <Form.Select
+                                value={inputs.currency}
+                                onChange={handleSelectStringChange}
+                            >
+                                {possibleCurrencies.map(curr => (
+                                    <option key={curr} value={curr}>
+                                        {curr}
+                                    </option>
+                                ))}
+                            </Form.Select>
                         </Form.Group>
                     </Row>
                 </Modal.Body>
