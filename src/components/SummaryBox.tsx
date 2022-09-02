@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { getBalance, getFlows } from '../services/redux/moneySlice';
+import { getTotalBalance, getCurrencyRates, getFlows } from '../services/redux/moneySlice';
 import { useAppSelector } from '../services/redux/store';
 
 interface SummaryBoxProps {
@@ -8,7 +8,9 @@ interface SummaryBoxProps {
 
 export default function SummaryBox({ id }: SummaryBoxProps) {
     const flows = useAppSelector(getFlows);
-    const total = useAppSelector(getBalance);
+    const total = useAppSelector(getTotalBalance);
+    const currency_rates = useAppSelector(getCurrencyRates);
+
     const name = useMemo(() => {
         switch (id) {
             case "total":
@@ -31,7 +33,7 @@ export default function SummaryBox({ id }: SummaryBoxProps) {
             return flows.filter(
                 exp => new Date(exp.date) >= first_date
             ).reduce((total, item) =>
-                total + item.cost
+                total + item.cost * currency_rates[item.currency]
                 , 0.0);
         }
 

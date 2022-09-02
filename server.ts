@@ -197,13 +197,13 @@ app.get("/api/transfers", async (req, res) => {
 })
 
 app.post("/api/transfers", async (req: Request<unknown, unknown, TransferInput>, res, next) => {
-    if (!req.body.name || !req.body.amount || !req.body.category || !req.body.from_account || !req.body.to_account || !req.body.date) {
+    if (!req.body.name || !req.body.amount || !req.body.rate || !req.body.category || !req.body.from_account || !req.body.to_account || !req.body.date) {
         res.status(400).send("Missing parameter");
         return;
     }
     let query;
     try {
-        query = await db.query("INSERT INTO `transfers` (`name`, `amount`, `category`, `from_account`, `to_account`, `date`) VALUES (?, ?, ?, ?, ?, ?)", [req.body.name, req.body.amount, req.body.category, req.body.from_account, req.body.to_account, req.body.date]);
+        query = await db.query("INSERT INTO `transfers` (`name`, `amount`, `rate`, `category`, `from_account`, `to_account`, `date`) VALUES (?, ?, ?, ?, ?, ?, ?)", [req.body.name, req.body.amount, req.body.rate, req.body.category, req.body.from_account, req.body.to_account, req.body.date]);
     } catch (err) {
         return next(err);
     }

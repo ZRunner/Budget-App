@@ -6,7 +6,7 @@ import { Transfer } from "../types";
 
 import '../css/ExpenseItem.scss';
 import { useAppSelector } from "../services/redux/store";
-import { getBankAccount } from "../services/redux/moneySlice";
+import { getBankAccount, getCurrencyRates } from "../services/redux/moneySlice";
 
 
 interface ListedTransferProps {
@@ -15,6 +15,7 @@ interface ListedTransferProps {
 
 export default function ListedTransfer({ transfer }: ListedTransferProps) {
     const { deleteTransferCommand } = useTransferCommands();
+    const currencyRates = useAppSelector(getCurrencyRates);
     const fromAccount = useAppSelector(state => getBankAccount(state, transfer.from_account))
     const toAccount = useAppSelector(state => getBankAccount(state, transfer.to_account))
     const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value)
@@ -24,9 +25,15 @@ export default function ListedTransfer({ transfer }: ListedTransferProps) {
         [transfer.date]
     )
 
-    const formatedAmount = useMemo(() =>
-        format(transfer.amount, transfer.currency),
-        [transfer.currency, transfer.amount]
+    const formatedAmount1 = useMemo(() =>
+        format(transfer.amount, fromAccount?.currency ?? 'EUR'),
+        [transfer.amount, fromAccount?.currency]
+    )
+    const formatedAmount2 = useMemo(() =>
+        fromAccount?.currency === toAccount?.currency
+            ? undefined
+            : format(transfer.amount * transfer.rate, toAccount?.currency ?? 'EUR'),
+        [transfer.amount, fromAccount?.currency, toAccount?.currency]
     )
 
     const handleDeleteTransfer = () => {
@@ -46,7 +53,7 @@ export default function ListedTransfer({ transfer }: ListedTransferProps) {
             </div>
             <div>
                 <span className="badge bg-secondary rounded-pill me-3">
-                    {formatedAmount}
+                    {formatedAmount2 ? `${formatedAmount1} 🠖 ${formatedAmount2}` : formatedAmount1}
                 </span>
                 <BsPencilFill className="edit-btn mx-1" size="1.3em" />
                 <TiDelete className="delete-btn" size="1.5em" onClick={handleDeleteTransfer} />

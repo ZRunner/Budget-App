@@ -35,15 +35,23 @@ export const getCurrencyRates = createSelector(getSlice, state => state.currency
 /**
  * Get the total amount of currently owned money accross all acccounts
  */
-export const getBalance = createSelector(
-    [getFlows, getBankAccounts],
-    (flows, bank_accounts) => {
+export const getTotalBalance = createSelector(
+    [getFlows, getTransfers, getBankAccounts, getCurrencyRates],
+    (flows, transfers, bank_accounts, currency_rates) => {
         const initial = bank_accounts.reduce((total, account) => {
-            return total += account.initial_balance;
+            return total += account.initial_balance * currency_rates[account.currency];
         }, 0.0)
-        return flows.reduce((total, item) => {
-            return (total += item.cost);
+        const withFlows = flows.reduce((total, item) => {
+            return (total += item.cost / currency_rates[item.currency]);
         }, initial);
+        return transfers.reduce((total, item) => {
+            const from_cur = bank_accounts.find(acc => acc.id === item.from_account)?.currency ?? "EUR";
+            const to_cur = bank_accounts.find(acc => acc.id === item.to_account)?.currency ?? "EUR";
+            if (from_cur === to_cur) return total;
+            const rate_1 = currency_rates[from_cur];
+            const rate_2 = currency_rates[to_cur];
+            return total -= item.amount / rate_1 - item.amount * item.rate / rate_2;
+        }, withFlows)
     }
 );
 
