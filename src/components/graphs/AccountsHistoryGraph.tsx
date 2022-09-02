@@ -125,14 +125,14 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
                     dayDiff.set(exp.bank_account, prev + exp.cost);
                 }
             }
-            for (let exp of getTransfersOfDay(day)) {
-                if (bankAccounts.includes(exp.from_account)) {
-                    const prev = dayDiff.get(exp.from_account) ?? 0;
-                    dayDiff.set(exp.from_account, prev - exp.amount);
+            for (let transfer of getTransfersOfDay(day)) {
+                if (bankAccounts.includes(transfer.from_account)) {
+                    const prev = dayDiff.get(transfer.from_account) ?? 0;
+                    dayDiff.set(transfer.from_account, prev - transfer.amount);
                 }
-                if (bankAccounts.includes(exp.to_account)) {
-                    const prev = dayDiff.get(exp.to_account) ?? 0;
-                    dayDiff.set(exp.to_account, prev + exp.amount);
+                if (bankAccounts.includes(transfer.to_account)) {
+                    const prev = dayDiff.get(transfer.to_account) ?? 0;
+                    dayDiff.set(transfer.to_account, prev + transfer.amount * transfer.rate);
                 }
             }
 
