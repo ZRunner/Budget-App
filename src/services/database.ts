@@ -90,6 +90,9 @@ class ApiHandler {
     }
 
     async get_currency_rates(): Promise<CurrencyRate> {
+        // source:
+        // https://github.com/theDavidBarton/european-central-bank-currency-rates-to-json/blob/master/src/transformRatesToJSON.js
+        // (MIT license)
         const resp = await fetch("/api/currency_rates");
         const txt = await resp.text();
         const parsedData = new DOMParser().parseFromString(txt, 'application/xml');
