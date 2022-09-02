@@ -1,7 +1,7 @@
 import { FaEquals, FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import '../css/HistoryTable.scss';
 import { useAppSelector } from '../services/redux/store';
-import { getFlows, getTransfers } from '../services/redux/moneySlice';
+import { getCurrencyRates, getFlows, getTransfers } from '../services/redux/moneySlice';
 import { useEffect, useMemo, useState } from 'react';
 import { Balance } from '../types';
 import apiHandler from '../services/database';
@@ -16,6 +16,7 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
     const [accounts, setAccounts] = useState<Balance[]>([]);
     const flows = useAppSelector(getFlows);
     const transfers = useAppSelector(getTransfers);
+    const currencyRates = useAppSelector(getCurrencyRates);
 
     const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value);
     const currenciesMap = new Map(accounts.map(acc => [acc.id, acc.currency]));
@@ -68,8 +69,8 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
                 const d = new Date(flow.date)
                 return bankAccounts.includes(flow.bank_account)
                     && d.getUTCDate() === day.getDate()
-                    && d.getMonth() === day.getMonth()
-                    && d.getFullYear() === day.getFullYear();
+                    && d.getUTCMonth() === day.getMonth()
+                    && d.getUTCFullYear() === day.getFullYear();
             });
         }
 
@@ -81,8 +82,8 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
                     || bankAccounts.includes(transfer.to_account)
                 )
                     && d.getUTCDate() === day.getDate()
-                    && d.getMonth() === day.getMonth()
-                    && d.getFullYear() === day.getFullYear();
+                    && d.getUTCMonth() === day.getMonth()
+                    && d.getUTCFullYear() === day.getFullYear();
             });
         }
 
@@ -93,7 +94,9 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
         const getTotal = (bal: typeof dayState) => {
             let total = 0;
             bal.forEach((val, i) => {
-                if (bankAccounts.includes(i)) { total += val; }
+                if (bankAccounts.includes(i)) {
+                    total += val / currencyRates[currenciesMap.get(i) ?? "EUR"]
+                }
             })
             return total;
         }
@@ -107,12 +110,12 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
                     dayState.set(exp.bank_account, dayState.get(exp.bank_account)! + exp.cost);
                 }
             }
-            for (let exp of getTransfersOfDay(day)) {
-                if (bankAccounts.includes(exp.from_account)) {
-                    dayState.set(exp.from_account, dayState.get(exp.from_account)! - exp.amount);
+            for (let transfer of getTransfersOfDay(day)) {
+                if (bankAccounts.includes(transfer.from_account)) {
+                    dayState.set(transfer.from_account, dayState.get(transfer.from_account)! - transfer.amount);
                 }
-                if (bankAccounts.includes(exp.to_account)) {
-                    dayState.set(exp.to_account, dayState.get(exp.to_account)! + exp.amount);
+                if (bankAccounts.includes(transfer.to_account)) {
+                    dayState.set(transfer.to_account, dayState.get(transfer.to_account)! + transfer.amount * transfer.rate);
                 }
             }
             // fix round issues
