@@ -134,12 +134,12 @@ app.get('/api/earnings_per_account', async (req: Request<unknown, unknown, unkno
 })
 
 app.get("/api/flows", async (req, res) => {
-    const query = await db.query("SELECT * FROM flows ORDER BY date DESC;");
+    const query = await db.query("SELECT *, (SELECT b.currency FROM bank_accounts b WHERE b.id = bank_account) as currency FROM flows ORDER BY date DESC;");
     res.json(query);
 })
 
 app.get("/api/flows/:id", async (req, res) => {
-    const query = await db.query("SELECT * FROM flows WHERE id = ?;", [req.params.id]);
+    const query = await db.query("SELECT *, (SELECT b.currency FROM bank_accounts b WHERE b.id = bank_account) as currency FROM flows WHERE id = ?;", [req.params.id]);
     res.json(query[0]);
 })
 

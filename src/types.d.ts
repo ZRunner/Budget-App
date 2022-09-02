@@ -20,6 +20,7 @@ export interface Flow {
     cost: number;
     category: number;
     bank_account: number;
+    currency: string;
     date: string;
 }
 

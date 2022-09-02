@@ -26,7 +26,7 @@ export default function ListedTransfer({ transfer }: ListedTransferProps) {
 
     const formatedAmount = useMemo(() =>
         format(transfer.amount, transfer.currency),
-        [format, transfer.amount]
+        [transfer.currency, transfer.amount]
     )
 
     const handleDeleteTransfer = () => {

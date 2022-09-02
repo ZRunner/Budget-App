@@ -31,7 +31,7 @@ export default function AddTransferForm({ visible, onHide }: AddTransferFormProp
     const possibleCurrencies = useMemo(() => {
         const candidates = accounts.filter(acc =>
             acc.id === inputs.from_account || acc.id === inputs.to_account)
-        return [... new Set(candidates.map(acc => acc.currency))]
+        return [...new Set(candidates.map(acc => acc.currency))]
     }, [accounts, inputs])
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

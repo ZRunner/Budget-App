@@ -83,10 +83,17 @@ export const moneySlice = createSlice({
     name: 'money',
     initialState,
     reducers: {
-        addFlow: (state, action: PayloadAction<Flow>) => {
+        addFlow: (state, action: PayloadAction<Omit<Flow, "currency">>) => {
+            const bank_account = state.bank_accounts.find(acc => acc.id === action.payload.bank_account);
+            if (bank_account === undefined) {
+                console.warn("Unable to find bank account", action.payload.bank_account);
+            }
             return {
                 ...state,
-                flows: state.flows.concat(action.payload)
+                flows: state.flows.concat({
+                    ...action.payload,
+                    currency: bank_account?.currency ?? 'EUR'
+                })
             }
         },
         deleteFlow: (state, action: PayloadAction<number>) => {

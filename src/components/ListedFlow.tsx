@@ -25,8 +25,8 @@ export default function ListedFlow({ flow }: ListedFlowProps) {
     )
 
     const formatedAmount = useMemo(() =>
-        format(flow.cost, bankAccount?.currency ?? 'EUR'),
-        [format, flow.cost]
+        format(flow.cost, flow.currency),
+        [flow.cost, flow.currency]
     )
 
     const handleDeleteExpense = () => {
