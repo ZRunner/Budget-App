@@ -1,6 +1,6 @@
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Legend, Tooltip } from "chart.js";
-import { getBankAccounts, getFlows, getTransfers } from '../../services/redux/moneySlice';
+import { getBankAccounts, getCurrencyRates, getFlows, getTransfers } from '../../services/redux/moneySlice';
 import { useAppSelector } from '../../services/redux/store';
 import { useMemo } from 'react';
 import { BankAccount, Flow } from '../../types';
@@ -23,9 +23,8 @@ ChartJS.register(
 interface Point {
     x: string;
     y: number;
+    label: string;
 }
-
-const CurrFormat = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' })
 
 const getTime = (day: string | Date) => {
     let parsed = new Date(day);
@@ -38,6 +37,10 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
     const flows = useAppSelector(getFlows);
     const transfers = useAppSelector(getTransfers);
     const accounts = useAppSelector(getBankAccounts);
+    const currencyRates = useAppSelector(getCurrencyRates);
+
+    const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value);
+    const currenciesMap = new Map(accounts.map(acc => [acc.id, acc.currency]));
 
     function getAccountsMap() {
         let result = new Map<number | "total", BankAccount | undefined>(bankAccounts.map(id => [
@@ -79,11 +82,11 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
             []
         ]))
         result.set('total', [])
-        let labels: string[] = [];
+        let x_labels: string[] = [];
 
-        let balancePerAcc = new Map(bankAccounts.map(acc => [
-            acc,
-            accountsMap.get(acc)?.initial_balance ?? 0
+        let balancePerAcc = new Map(bankAccounts.map(acc_id => [
+            acc_id,
+            accountsMap.get(acc_id)?.initial_balance ?? 0
         ]))
         let today = endDate ? new Date(endDate) : new Date();
         today.setHours(0, 0, 0, 0);
@@ -91,9 +94,11 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
         function addValue(acc_id: number | "total", day: string, value: number) {
             let res = result.get(acc_id);
             if (res === undefined) return;
+            const currency = accountsMap.get(acc_id)?.currency ?? "EUR";
             res.push({
                 x: day,
-                y: value
+                y: value,
+                label: format(value, currency)
             })
         }
 
@@ -105,8 +110,8 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
             return filteredTransfers.filter(transfer => {
                 const d = new Date(transfer.date)
                 return d.getUTCDate() === day.getDate()
-                    && d.getMonth() === day.getMonth()
-                    && d.getFullYear() === day.getFullYear();
+                    && d.getUTCMonth() === day.getMonth()
+                    && d.getUTCFullYear() === day.getFullYear();
             });
         }
 
@@ -133,21 +138,21 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
 
             let total = 0;
             const formatedDay = day.toLocaleDateString(undefined, { timeZone: "UTC" });
-            dayDiff.forEach((value, acc) => {
+            dayDiff.forEach((value, acc_id) => {
                 if (value === undefined) return;
                 const r_value = Math.round(value * 1000) / 1000
-                addValue(acc, formatedDay, r_value);
-                balancePerAcc.set(acc, r_value);
-                total += r_value
+                addValue(acc_id, formatedDay, r_value);
+                balancePerAcc.set(acc_id, r_value);
+                total += r_value / currencyRates[currenciesMap.get(acc_id) ?? "EUR"]
             })
             addValue('total', formatedDay, total);
-            labels.push(formatedDay);
+            x_labels.push(formatedDay);
 
             day.setDate(day.getDate() + 1);
         }
 
         return {
-            labels,
+            labels: x_labels,
             datasets: Array.from(result.entries())
                 .map<[BankAccount | undefined, Point[]]>(([acc_id, value]) => [accountsMap.get(acc_id), value])
                 .filter(([account, _value]) => account !== undefined && (account.name !== "Total" || bankAccounts.length > 1))
@@ -182,7 +187,7 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
                     tooltip: {
                         intersect: false,
                         callbacks: {
-                            label: a => a.dataset.label + ": " + CurrFormat.format((a.raw as Point).y),
+                            label: a => a.dataset.label + ": " + (a.raw as Point).label,
                         }
                     }
                 }
