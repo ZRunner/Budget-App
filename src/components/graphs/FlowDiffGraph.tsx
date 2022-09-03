@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Legend, Tooltip } from "chart.js";
-import { getFlows } from '../../services/redux/moneySlice';
+import { getBankAccounts, getCurrencyRates, getFlows } from '../../services/redux/moneySlice';
 import { useAppSelector } from '../../services/redux/store';
 import { Flow } from '../../types';
 
@@ -36,6 +36,10 @@ const getTime = (day: string | Date) => {
 
 export default function FlowDiffGraph({ startDate, endDate, bankAccounts }: FlowDiffGraphProps) {
     const flows = useAppSelector(getFlows);
+    const currencyRates = useAppSelector(getCurrencyRates);
+    const accounts = useAppSelector(getBankAccounts);
+
+    const currencyRatesMap = new Map(accounts.map(acc => [acc.id, currencyRates[acc.currency]]));
 
     const filteredFlows = useMemo(() => {
         const start = new Date(startDate);
@@ -82,7 +86,7 @@ export default function FlowDiffGraph({ startDate, endDate, bankAccounts }: Flow
             let spent = 0.0;
             for (const flow of day_flows) {
                 if (flow.cost > 0) earned += flow.cost
-                else spent += flow.cost;
+                else spent += flow.cost / (currencyRatesMap.get(flow.bank_account) ?? 1);
             }
 
             const formatedDay = day.toLocaleDateString(undefined, { timeZone: "UTC" });
