@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react';
 import { useSelector } from 'react-redux';
 import BankAccountsSelect from '../components/forms/BankAccountsSelect';
 import AccountsDoughnutGraph from '../components/graphs/AccountsDoughnutGraph';
+import CategoriesDoughnutGraph from '../components/graphs/CategoriesDoughnutGraph';
 import EarningsDoughnutGraph from '../components/graphs/EarningsDoughnutGraph';
 import '../css/StatsPage.scss';
 import { getSelectedBankAccounts } from '../services/redux/contextSlice';
@@ -37,9 +38,14 @@ export function StatsPage() {
                 <AccountsDoughnutGraph bankAccounts={selectedAccounts} />
             </Suspense>
 
-            <h4>Expenses and Incomes repartition (2 months)</h4>
+            <h4>Expenses and Incomes repartition per bank account (2 months)</h4>
             <Suspense>
                 <EarningsDoughnutGraph bankAccounts={selectedAccounts} monthsCount={2} />
+            </Suspense>
+
+            <h4>Expenses and Incomes repartition per category (2 months)</h4>
+            <Suspense>
+                <CategoriesDoughnutGraph bankAccounts={selectedAccounts} monthsCount={2} />
             </Suspense>
         </div>
     )
