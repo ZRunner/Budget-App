@@ -7,6 +7,9 @@ import { Flow } from "../types";
 import '../css/ExpenseItem.scss';
 import { useAppSelector } from "../services/redux/store";
 import { getBankAccount, getCategory } from "../services/redux/moneySlice";
+import chroma from "chroma-js";
+
+const COLORED_CATEGORY_PILLS = true;
 
 
 interface ListedFlowProps {
@@ -35,6 +38,8 @@ export default function ListedFlow({ flow }: ListedFlowProps) {
 
     const pillColor = flow.cost > 0 ? 'success' : 'danger';
 
+    const categoryColor = category && chroma(category?.color).alpha(0.6).css()
+
     return (
         <li className="expense-item list-group-item d-flex justify-content-between align-items-center">
             <div>
@@ -47,9 +52,13 @@ export default function ListedFlow({ flow }: ListedFlowProps) {
                 </span>
             </div>
             <div>
-                <small className="text-secondary me-2">
-                    {category?.name ?? '?'}
-                </small>
+                {COLORED_CATEGORY_PILLS
+                    ? <small className="text-white me-2 badge rounded-pill" style={{ backgroundColor: categoryColor, fontWeight: 'initial' }}>
+                        {category?.name ?? '?'}
+                    </small>
+                    : <small className="text-secondary me-2" >
+                        {category?.name ?? '?'}
+                    </small>}
                 <span className={`badge bg-${pillColor} rounded-pill me-3`}>
                     {formatedAmount}
                 </span>
