@@ -4,6 +4,8 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 import apiHandler from '../../services/database';
 import { Balance } from '../../types';
+import { getCurrencyRates } from '../../services/redux/moneySlice';
+import { useAppSelector } from '../../services/redux/store';
 
 interface AccountsHistoryGraphProps {
     bankAccounts: number[];
@@ -17,6 +19,7 @@ ChartJS.register(
 
 export default function AccountsDoughnutGraph({ bankAccounts }: AccountsHistoryGraphProps) {
     const [balances, setBalances] = useState<Balance[]>([]);
+    const currencyRates = useAppSelector(getCurrencyRates);
 
     const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value)
 
@@ -41,23 +44,23 @@ export default function AccountsDoughnutGraph({ bankAccounts }: AccountsHistoryG
 
     const [data, labels] = useMemo(() => {
         console.log("calculating AccountsDoughnutGraph")
-        const sum = filteredBalances.reduce((total, acc) => total + acc.balance, 0.0);
+        const sum = filteredBalances.reduce((total, acc) => total + acc.balance / currencyRates[acc.currency], 0.0);
 
         const labels = filteredBalances.map(acc => {
-            const percent = Math.round(acc.balance / sum * 1000) / 10;
+            const percent = Math.round(acc.balance / currencyRates[acc.currency] / sum * 1000) / 10;
             return `${acc.name}: ${format(acc.balance, acc.currency)} (${percent}%)`
         })
 
         const data = {
             labels: filteredBalances.map(b => b.name),
             datasets: [{
-                data: filteredBalances.map(b => b.balance),
+                data: filteredBalances.map(b => b.balance / currencyRates[b.currency]),
                 backgroundColor: filteredBalances.map(b => b.color),
             }]
         }
 
         return [data, labels]
-    }, [jsoned])
+    }, [jsoned, currencyRates])
 
     return <Doughnut
         data={data}

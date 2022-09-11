@@ -74,7 +74,9 @@ app.get('/api/current_balances', async (req, res) => {
     ) + (
         SELECT 
         ROUND(
-            COALESCE(SUM(amount), 0), 
+            COALESCE(SUM(
+                t.amount * t.rate
+                ), 0), 
             2) 
         FROM transfers t 
         WHERE t.to_account = b.id
