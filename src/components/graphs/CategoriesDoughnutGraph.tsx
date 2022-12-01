@@ -1,7 +1,6 @@
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { useEffect, useMemo } from 'react';
-import apiHandler from '../../services/database';
+import { useMemo } from 'react';
 import { useAppSelector } from '../../services/redux/store';
 import { getBankAccounts, getCategories, getCurrencyRates, getFlows } from '../../services/redux/moneySlice';
 import { Category } from '../../types';
@@ -36,15 +35,11 @@ export default function CategoriesDoughnutGraph({ bankAccounts, monthsCount }: C
             .filter(flow => bankAccounts.includes(flow.bank_account)
                 && new Date(flow.date) >= firstDate
             )
-    ), [flows, bankAccounts])
+    ), [flows, bankAccounts, firstDate])
     const jsoned = JSON.stringify(filteredFlows)
 
     const [data, labels] = useMemo(() => {
         console.log("calculating CategoriesDoughnutGraph")
-        const [sum_inc, sum_exp] = filteredFlows.reduce((total, flow) => ([
-            total[0] + (flow.cost > 0 ? flow.cost : 0),
-            total[1] + (flow.cost < 0 ? flow.cost : 0),
-        ]), [0.0, 0.0])
 
         const per_category = new Map<number, { category: Category; inc: number; exp: number; }>();
         for (const flow of filteredFlows) {
@@ -73,6 +68,10 @@ export default function CategoriesDoughnutGraph({ bankAccounts, monthsCount }: C
         }
         const raw_data = Array.from(per_category.values())
             .sort((a, b) => b.exp - a.exp)
+        const [sum_inc, sum_exp] = raw_data.reduce((total, flow) => ([
+            total[0] + flow.inc,
+            total[1] + flow.exp,
+        ]), [0.0, 0.0])
 
         const labels = raw_data.map(categ => {
             const inc_percent = Math.round((categ.inc ?? 0) / sum_inc * 1000) / 10;
@@ -100,7 +99,7 @@ export default function CategoriesDoughnutGraph({ bankAccounts, monthsCount }: C
         }
 
         return [data, labels];
-    }, [jsoned, format])
+    }, [jsoned, format, accounts, categories, currencyRates])
 
     return <Doughnut
         data={data}
