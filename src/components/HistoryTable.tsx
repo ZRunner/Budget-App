@@ -156,7 +156,7 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
                         <th key={id} scope="col">{accounts.find(acc => acc.id === id)?.name}</th>
                     ))}
                     <th scope="col">Total</th>
-                    <th scope="col">Modification</th>
+                    <th scope="col">Évolution</th>
                 </tr>
             </thead>
             <tbody>
