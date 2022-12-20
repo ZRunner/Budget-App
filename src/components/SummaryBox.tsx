@@ -33,7 +33,7 @@ export default function SummaryBox({ id }: SummaryBoxProps) {
             return flows.filter(
                 exp => new Date(exp.date) >= first_date
             ).reduce((total, item) =>
-                total + item.cost * currency_rates[item.currency]
+                total + item.cost / currency_rates[item.currency]
                 , 0.0);
         }
 
