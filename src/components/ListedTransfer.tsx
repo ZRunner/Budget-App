@@ -15,7 +15,6 @@ interface ListedTransferProps {
 
 export default function ListedTransfer({ transfer }: ListedTransferProps) {
     const { deleteTransferCommand } = useTransferCommands();
-    const currencyRates = useAppSelector(getCurrencyRates);
     const fromAccount = useAppSelector(state => getBankAccount(state, transfer.from_account))
     const toAccount = useAppSelector(state => getBankAccount(state, transfer.to_account))
     const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value)
@@ -48,12 +47,12 @@ export default function ListedTransfer({ transfer }: ListedTransferProps) {
                 </small>
                 <span>{transfer.name}</span>
                 <span className="badge bg-secondary rounded-pill ms-2">
-                    {fromAccount?.name ?? '?'} 🠖 {toAccount?.name ?? '?'}
+                    {fromAccount?.name ?? '?'} → {toAccount?.name ?? '?'}
                 </span>
             </div>
             <div>
                 <span className="badge bg-secondary rounded-pill me-3">
-                    {formatedAmount2 ? `${formatedAmount1} 🠖 ${formatedAmount2}` : formatedAmount1}
+                    {formatedAmount2 ? `${formatedAmount1} → ${formatedAmount2}` : formatedAmount1}
                 </span>
                 <BsPencilFill className="edit-btn mx-1" size="1.3em" />
                 <TiDelete className="delete-btn" size="1.5em" onClick={handleDeleteTransfer} />
