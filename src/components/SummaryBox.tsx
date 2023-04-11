@@ -50,9 +50,9 @@ export default function SummaryBox({ id }: SummaryBoxProps) {
     const color = useMemo(() => {
         if (value < 0) {
             return "danger";
-        } else if (value < 30) {
+        } else if (value < 40) {
             return "warning";
-        } else if (value < 50) {
+        } else if (value < 80) {
             return "secondary";
         } else {
             return "success";
