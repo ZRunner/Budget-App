@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { getTotalBalance, getCurrencyRates, getFlows } from '../services/redux/moneySlice';
+import { getTotalBalance, getCurrencyRates, getFlows, getTransfers, getBankAccounts } from '../services/redux/moneySlice';
 import { useAppSelector } from '../services/redux/store';
 
 interface SummaryBoxProps {
@@ -8,6 +8,8 @@ interface SummaryBoxProps {
 
 export default function SummaryBox({ id }: SummaryBoxProps) {
     const flows = useAppSelector(getFlows);
+    const transfers = useAppSelector(getTransfers);
+    const bank_accounts = useAppSelector(getBankAccounts);
     const total = useAppSelector(getTotalBalance);
     const currency_rates = useAppSelector(getCurrencyRates);
 
@@ -30,11 +32,22 @@ export default function SummaryBox({ id }: SummaryBoxProps) {
             const first_date = new Date();
             first_date.setMonth(first_date.getMonth() - count);
             // filter interesting values and sum them
-            return flows.filter(
+            let result = flows.filter(
                 exp => new Date(exp.date) >= first_date
             ).reduce((total, item) =>
                 total + item.cost / currency_rates[item.currency]
                 , 0.0);
+            // add transfers
+            return transfers.filter(
+                exp => new Date(exp.date) >= first_date
+            ).reduce((total, item) => {
+                const from_cur = bank_accounts.find(acc => acc.id === item.from_account)?.currency ?? "EUR";
+                const to_cur = bank_accounts.find(acc => acc.id === item.to_account)?.currency ?? "EUR";
+                if (from_cur === to_cur) return total;
+                const rate_1 = currency_rates[from_cur];
+                const rate_2 = currency_rates[to_cur];
+                return total -= item.amount / rate_1 - item.amount * item.rate / rate_2;
+            }, result)
         }
 
         switch (id) {
