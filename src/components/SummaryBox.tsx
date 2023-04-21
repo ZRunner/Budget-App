@@ -58,7 +58,7 @@ export default function SummaryBox({ id }: SummaryBoxProps) {
             case "6months":
                 return getDeltaMonths(6);
         }
-    }, [id, total, flows])
+    }, [id, total, flows, transfers, bank_accounts, currency_rates])
 
     const color = useMemo(() => {
         if (value < 0) {
