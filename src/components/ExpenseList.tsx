@@ -18,7 +18,7 @@ export default function ExpenseList() {
         if (event.target.value.length === 0) {
             setSearchTerms(null);
         } else {
-            setSearchTerms(event.target.value);
+            setSearchTerms(event.target.value.toLowerCase());
         }
     }
 
