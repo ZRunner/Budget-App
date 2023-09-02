@@ -24,7 +24,6 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
     // last day of the history, either today or the provided "endDate"
     const lastDay = useMemo(() => {
         const day = endDate ? new Date(endDate) : new Date();
-        day.setHours(0, 0, 0, 0);
         return day;
     }, [endDate])
 
@@ -34,7 +33,6 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
         max.setFullYear(max.getFullYear() - 1);
 
         const day = max < new Date(startDate) ? new Date(startDate) : max;
-        day.setHours(0, 0, 0, 0);
         return day;
     }, [startDate, lastDay]);
 
@@ -105,23 +103,27 @@ export default function HistoryTable({ startDate, endDate, bankAccounts }: Histo
         let prev_day = new Date(day);
 
         while (day <= lastDay) {
-            for (let exp of getFlowsOfDay(day)) {
-                if (bankAccounts.includes(exp.bank_account)) {
-                    dayState.set(exp.bank_account, dayState.get(exp.bank_account)! + exp.cost);
+            // first day is already processed from apiHandler.getHistoricBalances
+            //  so we don't need to process it again
+            if (day > firstDay) {
+                for (let exp of getFlowsOfDay(day)) {
+                    if (bankAccounts.includes(exp.bank_account)) {
+                        dayState.set(exp.bank_account, dayState.get(exp.bank_account)! + exp.cost);
+                    }
                 }
+                for (let transfer of getTransfersOfDay(day)) {
+                    if (bankAccounts.includes(transfer.from_account)) {
+                        dayState.set(transfer.from_account, dayState.get(transfer.from_account)! - transfer.amount);
+                    }
+                    if (bankAccounts.includes(transfer.to_account)) {
+                        dayState.set(transfer.to_account, dayState.get(transfer.to_account)! + transfer.amount * transfer.rate);
+                    }
+                }
+                // fix round issues
+                dayState.forEach((val, i) => {
+                    if (Math.abs(val) < 0.001) { dayState.set(i, 0.0) }
+                })
             }
-            for (let transfer of getTransfersOfDay(day)) {
-                if (bankAccounts.includes(transfer.from_account)) {
-                    dayState.set(transfer.from_account, dayState.get(transfer.from_account)! - transfer.amount);
-                }
-                if (bankAccounts.includes(transfer.to_account)) {
-                    dayState.set(transfer.to_account, dayState.get(transfer.to_account)! + transfer.amount * transfer.rate);
-                }
-            }
-            // fix round issues
-            dayState.forEach((val, i) => {
-                if (Math.abs(val) < 0.001) { dayState.set(i, 0.0) }
-            })
 
             if (day.getMonth() !== prev_day.getMonth()) {
                 result.push({
