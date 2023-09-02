@@ -115,8 +115,10 @@ app.get('/api/historic_balances/:day', async (req, res) => {
     ) + (
         SELECT 
         ROUND(
-            COALESCE(SUM(amount), 0), 
-            2) 
+            COALESCE(SUM(
+                t.amount * t.rate
+                ), 0), 
+            2)
         FROM transfers t 
         WHERE t.to_account = b.id AND t.date <= ?
     ) as balance 
