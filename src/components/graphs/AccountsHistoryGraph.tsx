@@ -136,17 +136,25 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
                 }
             }
 
+            const shouldUpdateGraph = day.getDay() === 1 || day === today
             let total = 0;
             const formatedDay = day.toLocaleDateString(undefined, { timeZone: "UTC" });
             dayDiff.forEach((value, acc_id) => {
                 if (value === undefined) return;
                 const r_value = Math.round(value * 1000) / 1000
-                addValue(acc_id, formatedDay, r_value);
+                if (shouldUpdateGraph) {
+                    addValue(acc_id, formatedDay, r_value);
+                    if (r_value < 0) {
+                        console.debug("Found value below 0:", r_value, "on", formatedDay, "for account", acc_id)
+                    }
+                }
                 balancePerAcc.set(acc_id, r_value);
                 total += r_value / currencyRates[currenciesMap.get(acc_id) ?? "EUR"]
             })
-            addValue('total', formatedDay, total);
-            x_labels.push(formatedDay);
+            if (shouldUpdateGraph) {
+                addValue('total', formatedDay, total);
+                x_labels.push(formatedDay);
+            }
 
             day.setDate(day.getDate() + 1);
         }
