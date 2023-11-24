@@ -136,7 +136,7 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
                 }
             }
 
-            const shouldUpdateGraph = day.getDay() === 1 || day === today
+            const shouldUpdateGraph = day.getDay() === 1 || day.getTime()=== today.getTime();
             let total = 0;
             const formatedDay = day.toLocaleDateString(undefined, { timeZone: "UTC" });
             dayDiff.forEach((value, acc_id) => {
