@@ -85,8 +85,9 @@ export default function FlowDiffGraph({ startDate, endDate, bankAccounts }: Flow
             let earned = 0.0;
             let spent = 0.0;
             for (const flow of day_flows) {
-                if (flow.cost > 0) earned += flow.cost
-                else spent += flow.cost / (currencyRatesMap.get(flow.bank_account) ?? 1);
+                const currencyRate = currencyRatesMap.get(flow.bank_account) ?? 1;
+                if (flow.cost > 0) earned += flow.cost / currencyRate;
+                else spent += flow.cost / currencyRate;
             }
 
             const formatedDay = day.toLocaleDateString(undefined, { timeZone: "UTC" });
