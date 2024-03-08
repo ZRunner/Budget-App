@@ -8,11 +8,14 @@ import { useTransferCommands } from '../../services/hooks';
 import { getBankAccounts, getCurrencyRates } from '../../services/redux/moneySlice';
 import { useAppSelector } from '../../services/redux/store';
 import BankAccountSelect from './BankAccountSelect';
+import { InputGroup } from 'react-bootstrap';
 
 interface AddTransferFormProps {
     visible: boolean;
     onHide: () => void;
 }
+
+const amountPlaceholder = new Intl.NumberFormat(undefined, { minimumFractionDigits: 2 }).format(0.0);
 
 export default function AddTransferForm({ visible, onHide }: AddTransferFormProps) {
     const { addTransferCommand } = useTransferCommands();
@@ -30,18 +33,11 @@ export default function AddTransferForm({ visible, onHide }: AddTransferFormProp
     })
     const [fixedAmounts, setFixedAmounts] = useState({ amount1: false, amount2: false })
 
-    const [currency1, currency2]: (string | undefined)[] = useMemo(() => ([
-        accounts.find(acc => acc.id === inputs.from_account)?.currency,
-        accounts.find(acc => acc.id === inputs.to_account)?.currency
+    const [outputAccountCurrency, inputAccountCurrency]: (string | undefined)[] = useMemo(() => ([
+        accounts.find(acc => acc.id === inputs.from_account)?.currency ?? "EUR",
+        accounts.find(acc => acc.id === inputs.to_account)?.currency ?? "EUR"
     ]), [accounts, inputs])
-
-    const amount1Placeholder = useMemo(() => (
-        new Intl.NumberFormat(undefined, { style: 'currency', currency: currency1 ?? "EUR" }).format(0.0)
-    ), [currency1])
-
-    const amount2Placeholder = useMemo(() => (
-        new Intl.NumberFormat(undefined, { style: 'currency', currency: currency2 ?? "EUR" }).format(0.0)
-    ), [currency2])
+    const sameCurrencies = outputAccountCurrency === inputAccountCurrency;
 
     const handleChangeString = (event: React.ChangeEvent<HTMLInputElement>) => {
         const id = event.target.id;
@@ -52,14 +48,14 @@ export default function AddTransferForm({ visible, onHide }: AddTransferFormProp
         const id = event.target.id;
         const value = Number(event.target.value);
         if (id === "amount1" && !fixedAmounts.amount2) {
-            const amount2 = value * currencyRates[currency2 ?? "EUR"] / currencyRates[currency1 ?? "EUR"]
+            const amount2 = value * currencyRates[inputAccountCurrency ?? "EUR"] / currencyRates[outputAccountCurrency ?? "EUR"]
             setInputs({
                 ...inputs,
                 amount1: value,
                 amount2: amount2
             })
         } else if (id === "amount2" && !fixedAmounts.amount1) {
-            const amount1 = value * currencyRates[currency1 ?? "EUR"] / currencyRates[currency2 ?? "EUR"]
+            const amount1 = value * currencyRates[outputAccountCurrency ?? "EUR"] / currencyRates[inputAccountCurrency ?? "EUR"]
             setInputs({
                 ...inputs,
                 amount1: amount1,
@@ -135,30 +131,38 @@ export default function AddTransferForm({ visible, onHide }: AddTransferFormProp
                         </Form.Group>
 
                         <Form.Group as={Col} controlId='amount1'>
-                            <Form.Label>{currency1 === currency2 ? "Amount" : "Orig. Amount"}</Form.Label>
-                            <Form.Control
-                                type="number"
-                                placeholder={amount1Placeholder}
-                                step="0.01"
-                                min="0.0"
-                                value={Math.round(inputs.amount1 * 100) / 100}
-                                onChange={handleChangeAmount}
-                                required
-                            />
-                        </Form.Group>
-
-                        {currency1 !== currency2 && (
-                            <Form.Group as={Col} controlId='amount2'>
-                                <Form.Label>Dest. amount</Form.Label>
+                            <Form.Label>{sameCurrencies ? "Amount" : "Orig. Amount"}</Form.Label>
+                            <InputGroup>
                                 <Form.Control
                                     type="number"
-                                    placeholder={amount2Placeholder}
+                                    placeholder={amountPlaceholder}
                                     step="0.01"
                                     min="0.0"
-                                    value={Math.round(inputs.amount2 * 100) / 100}
+                                    value={Math.round(inputs.amount1 * 100) / 100}
                                     onChange={handleChangeAmount}
+                                    aria-describedby="transfer-output-amount"
                                     required
                                 />
+                                <InputGroup.Text id="transfer-output-amount">{outputAccountCurrency}</InputGroup.Text>
+                            </InputGroup>
+                        </Form.Group>
+
+                        {!sameCurrencies && (
+                            <Form.Group as={Col} controlId='amount2'>
+                                <Form.Label>Dest. amount</Form.Label>
+                                <InputGroup>
+                                    <Form.Control
+                                        type="number"
+                                        placeholder={amountPlaceholder}
+                                        step="0.01"
+                                        min="0.0"
+                                        value={Math.round(inputs.amount2 * 100) / 100}
+                                        onChange={handleChangeAmount}
+                                        aria-describedby="transfer-input-amount"
+                                        required
+                                    />
+                                    <InputGroup.Text id="transfer-input-amount">{inputAccountCurrency}</InputGroup.Text>
+                                </InputGroup>
                             </Form.Group>
                         )}
 

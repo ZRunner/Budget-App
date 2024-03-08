@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
@@ -9,11 +9,14 @@ import { getBankAccounts } from '../../services/redux/moneySlice';
 import { useAppSelector } from '../../services/redux/store';
 import BankAccountSelect from './BankAccountSelect';
 import CategorySelect from './CategorySelect';
+import { InputGroup } from 'react-bootstrap';
 
 interface AddExpenseFormProps {
     visible: boolean;
     onHide: () => void;
 }
+
+const amountPlaceholder = new Intl.NumberFormat(undefined, { minimumFractionDigits: 2 }).format(0.0);
 
 export default function AddExpenseForm({ visible, onHide }: AddExpenseFormProps) {
     const { addFlowCommand } = useFlowCommands();
@@ -27,10 +30,7 @@ export default function AddExpenseForm({ visible, onHide }: AddExpenseFormProps)
         date: new Date().toISOString().split('T')[0],
     })
 
-    const amountPlaceholder = useMemo(() => {
-        const account = accounts.find(acc => acc.id === inputs.bank_account)?.currency;
-        return new Intl.NumberFormat(undefined, { style: 'currency', currency: account ?? "EUR" }).format(0.0)
-    }, [inputs.bank_account])
+    const accountCurrency = accounts.find(acc => acc.id === inputs.bank_account)?.currency ?? "EUR";
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const id = event.target.id;
@@ -102,14 +102,18 @@ export default function AddExpenseForm({ visible, onHide }: AddExpenseFormProps)
 
                         <Form.Group as={Col} controlId='cost'>
                             <Form.Label>Amount</Form.Label>
-                            <Form.Control
-                                type="number"
-                                placeholder={amountPlaceholder}
-                                step="0.01"
-                                value={inputs.cost}
-                                onChange={handleChange}
-                                required
-                            />
+                            <InputGroup>
+                                <Form.Control
+                                    type="number"
+                                    placeholder={amountPlaceholder}
+                                    step="0.01"
+                                    value={inputs.cost}
+                                    onChange={handleChange}
+                                    aria-describedby="expense-input-amount"
+                                    required
+                                />
+                                <InputGroup.Text id="expense-input-amount">{accountCurrency}</InputGroup.Text>
+                            </InputGroup>
                         </Form.Group>
                     </Row>
                 </Modal.Body>
