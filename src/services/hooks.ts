@@ -4,58 +4,58 @@ import { addFlow, addTransfer, deleteFlow, deleteTransfer, editFlow } from "./re
 import { useAppDispatch } from "./redux/store";
 
 export function useFlowCommands() {
-    const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-    function addFlowCommand(flow: FlowInput) {
-        apiHandler.addFlow(flow).then(new_id => {
-            if (new_id === null) return;
-            dispatch(addFlow({
-                ...flow,
-                id: new_id,
-            }))
-        })
-    };
+  function addFlowCommand(flow: FlowInput) {
+    apiHandler.addFlow(flow).then(newId => {
+      if (newId === null) return;
+      dispatch(addFlow({
+        ...flow,
+        id: newId,
+      }));
+    });
+  }
 
-    function deleteFlowCommand(flowId: number) {
-        apiHandler.deleteFlow(flowId).then(isOk => {
-            if (isOk) {
-                dispatch(deleteFlow(flowId))
-            }
-        })
-    }
+  function deleteFlowCommand(flowId: number) {
+    apiHandler.deleteFlow(flowId).then(isOk => {
+      if (isOk) {
+        dispatch(deleteFlow(flowId));
+      }
+    });
+  }
 
-    function editFlowCommand(flow: Flow) {
-        apiHandler.editFlow(flow.id, flow).then(isOk => {
-            if (isOk) {
-                dispatch(editFlow(flow));
-            }
-        })
-    }
+  function editFlowCommand(flow: Flow) {
+    apiHandler.editFlow(flow.id, flow).then(isOk => {
+      if (isOk) {
+        dispatch(editFlow(flow));
+      }
+    });
+  }
 
-    return { addFlowCommand, deleteFlowCommand, editFlowCommand };
+  return { addFlowCommand, deleteFlowCommand, editFlowCommand };
 }
 
 export function useTransferCommands() {
-    const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-    function addTransferCommand(transfer: TransferInput) {
-        apiHandler.addTransfer(transfer).then(new_id => {
-            if (new_id === null) return;
-            dispatch(addTransfer({
-                ...transfer,
-                id: new_id,
-            }))
-        })
-    };
+  function addTransferCommand(transfer: TransferInput) {
+    apiHandler.addTransfer(transfer).then(newId => {
+      if (newId === null) return;
+      dispatch(addTransfer({
+        ...transfer,
+        id: newId,
+      }));
+    });
+  }
 
-    function deleteTransferCommand(transferId: number) {
-        apiHandler.deleteTransfer(transferId).then(isOk => {
-            if (isOk) {
-                dispatch(deleteTransfer(transferId))
-            }
-        })
-    }
+  function deleteTransferCommand(transferId: number) {
+    apiHandler.deleteTransfer(transferId).then(isOk => {
+      if (isOk) {
+        dispatch(deleteTransfer(transferId));
+      }
+    });
+  }
 
 
-    return { addTransferCommand, deleteTransferCommand };
+  return { addTransferCommand, deleteTransferCommand };
 }

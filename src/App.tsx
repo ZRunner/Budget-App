@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import SummaryBox from './components/SummaryBox';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import apiHandler from './services/database';
-import { useAppDispatch } from './services/redux/store';
-import { setBankAccounts, setCategories, setCurrencyRates, setFlows, setTransfers } from './services/redux/moneySlice';
-import ExpensesPage from './pages/ExpensesPage';
-import { StatsPage } from './pages/StatsPage';
-import HistoryPage from './pages/HistoryPage';
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import React, { useEffect, useState } from "react";
+
+import SummaryBox from "./components/SummaryBox";
+import ExpensesPage from "./pages/ExpensesPage";
+import HistoryPage from "./pages/HistoryPage";
+import { StatsPage } from "./pages/StatsPage";
+import apiHandler from "./services/database";
+import { setBankAccounts, setCategories, setCurrencyRates, setFlows, setTransfers } from "./services/redux/moneySlice";
+import { useAppDispatch } from "./services/redux/store";
 
 function App() {
   const [page, setPage] = useState("1");
@@ -19,34 +21,34 @@ function App() {
 
   const handlePageChange = (e: unknown, value: string) => {
     setPage(value);
-  }
+  };
 
   useEffect(() => {
     // load data from database
-    console.log("Loading data from database...")
+    console.log("Loading data from database...");
     apiHandler.getFlows()
       .then(json => {
         dispatch(setFlows(json));
-      })
+      });
     apiHandler.getTransfers()
       .then(json => {
         dispatch(setTransfers(json));
-      })
+      });
     apiHandler.getBankAccounts()
       .then(json => {
         dispatch(setBankAccounts(json));
-      })
+      });
     apiHandler.getCategories()
       .then(json => {
         dispatch(setCategories(json));
-      })
+      });
 
     // load currencies values
-    apiHandler.get_currency_rates()
+    apiHandler.getCurrencyRates()
       .then(rates => {
         dispatch(setCurrencyRates(rates));
-      })
-  }, [dispatch])
+      });
+  }, [dispatch]);
 
   return (
     <div className="container">
@@ -64,7 +66,7 @@ function App() {
       </div>
 
       <TabContext value={page}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={handlePageChange}>
             <Tab label="Expenses" value="1" />
             <Tab label="Accounts history" value="2" />
