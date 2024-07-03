@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { InputGroup } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -12,46 +13,46 @@ import { Flow } from "../../../types";
 import BankAccountSelect from "../selectors/BankAccountSelect";
 import CategorySelect from "../selectors/CategorySelect";
 
-export type FlowFormInputType = Omit<Flow, "id" | "cost" | "currency"> & { id: number | undefined, cost: number | undefined };
+export type FlowFormInputType = Omit<Flow, "id" | "currency"> & { id: number | undefined };
+type InitialValueType = Omit<FlowFormInputType, "cost"> & { cost: number | undefined };
 
 interface FlowFormProps {
   visible: boolean;
   onHide: () => void;
-  expense: FlowFormInputType;
-  setFlow: (expense: FlowFormInputType) => void;
+  initialValue: InitialValueType;
+  onSubmit: (flow: FlowFormInputType) => void;
 }
 
 const amountPlaceholder = new Intl.NumberFormat(undefined, { minimumFractionDigits: 2 }).format(0.0);
 
-export default function FlowForm({ visible, onHide, expense, setFlow: setFlow }: FlowFormProps) {
-  const { addFlowCommand } = useFlowCommands();
+export default function FlowForm({ visible, onHide, initialValue, onSubmit }: FlowFormProps) {
+  const [flow, setFlow] = useState(initialValue);
   const accounts = useAppSelector(getBankAccounts);
 
-  const accountCurrency = accounts.find(acc => acc.id === expense.bankAccount)?.currency ?? "EUR";
+  const accountCurrency = accounts.find(acc => acc.id === flow.bankAccount)?.currency ?? "EUR";
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const id = event.target.id;
     const value = event.target.value;
-    setFlow({ ...expense, [id]: value });
+    setFlow({ ...flow, [id]: value });
   };
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const id = event.target.id;
     const value = event.target.value;
-    setFlow({ ...expense, [id]: Number(value) });
+    setFlow({ ...flow, [id]: Number(value) });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    addFlowCommand({
-      ...expense,
-      cost: Number(expense.cost),
+    onSubmit({
+      ...flow,
+      cost: Number(flow.cost),
     });
-    onHide();
   };
 
-  const isNewFlow = expense.id === undefined;
-  const modalTitle = isNewFlow ? "New expense" : `Edit expense #${expense.id}`;
-  const submitLable = isNewFlow ? "Add expense" : "Save changes";
+  const isNewFlow = flow.id === undefined;
+  const modalTitle = isNewFlow ? "New expense" : `Edit expense #${flow.id}`;
+  const submitLabel = isNewFlow ? "Add expense" : "Save changes";
 
   return (
     <Modal show={visible} onHide={onHide}>
@@ -66,7 +67,7 @@ export default function FlowForm({ visible, onHide, expense, setFlow: setFlow }:
             <Form.Control
               type="text"
               placeholder="The expense or income label"
-              value={expense.name}
+              value={flow.name}
               onChange={handleChange}
               required
             />
@@ -76,7 +77,7 @@ export default function FlowForm({ visible, onHide, expense, setFlow: setFlow }:
             <Form.Group as={Col} controlId="category">
               <Form.Label>Category</Form.Label>
               <CategorySelect
-                value={expense.category}
+                value={flow.category}
                 onChange={handleSelectChange}
               />
             </Form.Group>
@@ -84,7 +85,7 @@ export default function FlowForm({ visible, onHide, expense, setFlow: setFlow }:
             <Form.Group as={Col} controlId="bankAccount">
               <Form.Label>Bank Account</Form.Label>
               <BankAccountSelect
-                value={expense.bankAccount}
+                value={flow.bankAccount}
                 onChange={handleSelectChange}
               />
             </Form.Group>
@@ -95,7 +96,7 @@ export default function FlowForm({ visible, onHide, expense, setFlow: setFlow }:
               <Form.Label>Date</Form.Label>
               <Form.Control
                 type="date"
-                value={expense.date}
+                value={flow.date}
                 onChange={handleChange}
                 required
               />
@@ -108,7 +109,7 @@ export default function FlowForm({ visible, onHide, expense, setFlow: setFlow }:
                   type="number"
                   placeholder={amountPlaceholder}
                   step="0.01"
-                  value={expense.cost === undefined ? "" : expense.cost}
+                  value={flow.cost === undefined ? "" : flow.cost}
                   onChange={handleChange}
                   aria-describedby="expense-input-amount"
                   required
@@ -121,7 +122,7 @@ export default function FlowForm({ visible, onHide, expense, setFlow: setFlow }:
 
         <Modal.Footer>
           <Button variant="primary" type="submit">
-            {submitLable}
+            {submitLabel}
           </Button>
         </Modal.Footer>
       </Form>
