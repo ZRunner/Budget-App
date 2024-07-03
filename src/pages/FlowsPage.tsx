@@ -6,7 +6,7 @@ import AddFlow from "../components/FlowsPage/forms/AddFlow";
 import AddTransferForm from "../components/FlowsPage/forms/AddTransferForm";
 
 export default function FlowsPage() {
-  const [expenseModalVisible, setFlowModalVisible] = useState(false);
+  const [flowModalVisible, setFlowModalVisible] = useState(false);
   const [transferModalVisible, setTransferModalVisible] = useState(false);
 
   const showFlowModal = () => {
@@ -20,7 +20,7 @@ export default function FlowsPage() {
   return (
     <>
       <AddFlow
-        visible={expenseModalVisible}
+        visible={flowModalVisible}
         onHide={() => setFlowModalVisible(false)}
       />
       <AddTransferForm

@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { useFlowCommands } from "../../../services/hooks";
 import FlowForm, { FlowFormInputType } from "./FlowForm";
 
@@ -20,7 +18,7 @@ export default function AddFlow({ visible, onHide }: AddFlowProps) {
     date: new Date().toISOString().split("T")[0],
   };
 
-  const onSubmit = (flow: FlowFormInputType) => {
+  const handleSubmit = (flow: FlowFormInputType) => {
     addFlowCommand(flow);
     onHide();
   };
@@ -30,7 +28,7 @@ export default function AddFlow({ visible, onHide }: AddFlowProps) {
       visible={visible}
       onHide={onHide}
       initialValue={initialValue}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     />
   );
 }
