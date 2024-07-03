@@ -1,7 +1,7 @@
 import "../../css/FlowItem.scss";
 
 import chroma from "chroma-js";
-import { memo, useMemo } from "react";
+import { Fragment, memo, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { BsPencilFill } from "react-icons/bs";
 import { TiDelete } from "react-icons/ti";
@@ -10,6 +10,7 @@ import { useFlowCommands } from "../../services/hooks";
 import { getBankAccount, getCategory, getCurrencyRates } from "../../services/redux/moneySlice";
 import { useAppSelector } from "../../services/redux/store";
 import { Flow } from "../../types";
+import EditFlow from "./forms/EditFlow";
 
 
 interface FlowRowProps {
@@ -48,7 +49,7 @@ export default function FlowRow({ flow }: FlowRowProps) {
           {category?.name ?? "?"}
         </small>
         <AmountPill amount={flow.cost} currency={flow.currency} />
-        <BsPencilFill className="edit-btn mx-1" size="1.3em" />
+        <EditButton flow={flow} />
         <TiDelete className="delete-btn" size="1.5em" onClick={handleDeleteFlow} />
       </div>
     </li>
@@ -91,3 +92,14 @@ const AmountPill = memo(
     );
   }
 );
+
+function EditButton({ flow }: {flow: Flow}) {
+  const [editModalVisible, setEditModalVisible] = useState(false);
+
+  return (
+    <Fragment>
+      <BsPencilFill className="edit-btn mx-1" size="1.3em" onClick={() => setEditModalVisible(true)} />
+      {editModalVisible && <EditFlow flow={flow} visible={editModalVisible} onHide={() => setEditModalVisible(false)} />}
+    </Fragment>
+  );
+}

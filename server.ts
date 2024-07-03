@@ -181,10 +181,10 @@ app.put("/api/flows/:id", async (req: Request<{ id: number }, unknown, Partial<F
     name: req.body.name,
     cost: req.body.cost,
     category: req.body.category,
-    bankAccount: req.body.bankAccount,
+    "bank_account": req.body.bankAccount,
     date: req.body.date,
   };
-  if (!flow.name && !flow.cost && !flow.category && !flow.bankAccount && !flow.date) {
+  if (!flow.name && !flow.cost && !flow.category && !flow.bank_account && !flow.date) {
     res.status(400).send("Missing parameter");
     return;
   }
