@@ -1,7 +1,7 @@
 import { FormSelectProps } from 'react-bootstrap/FormSelect';
 import Form from 'react-bootstrap/Form';
-import { getCategories } from '../../services/redux/moneySlice';
-import { useAppSelector } from '../../services/redux/store';
+import { getCategories } from '../../../services/redux/moneySlice';
+import { useAppSelector } from '../../../services/redux/store';
 
 interface CategorySelectProps extends FormSelectProps { }
 

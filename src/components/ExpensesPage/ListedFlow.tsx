@@ -1,12 +1,12 @@
 import { memo, useMemo } from "react";
 import { TiDelete } from 'react-icons/ti';
 import { BsPencilFill } from 'react-icons/bs';
-import { useFlowCommands } from "../services/hooks";
-import { Flow } from "../types";
+import { useFlowCommands } from "../../services/hooks";
+import { Flow } from "../../types";
 
-import '../css/ExpenseItem.scss';
-import { useAppSelector } from "../services/redux/store";
-import { getBankAccount, getCategory, getCurrencyRates } from "../services/redux/moneySlice";
+import '../../css/ExpenseItem.scss';
+import { useAppSelector } from "../../services/redux/store";
+import { getBankAccount, getCategory, getCurrencyRates } from "../../services/redux/moneySlice";
 import chroma from "chroma-js";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 

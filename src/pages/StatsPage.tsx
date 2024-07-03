@@ -1,14 +1,14 @@
 import { Suspense, lazy } from 'react';
 import { useSelector } from 'react-redux';
-import BankAccountsSelect from '../components/forms/BankAccountsSelect';
-import AccountsDoughnutGraph from '../components/graphs/AccountsDoughnutGraph';
-import CategoriesDoughnutGraph from '../components/graphs/CategoriesDoughnutGraph';
-import EarningsDoughnutGraph from '../components/graphs/EarningsDoughnutGraph';
+import BankAccountsSelect from '../components/shared/BankAccountsSelect';
+import AccountsDoughnutGraph from '../components/StatsPage/AccountsDoughnutGraph';
+import CategoriesDoughnutGraph from '../components/StatsPage/CategoriesDoughnutGraph';
+import EarningsDoughnutGraph from '../components/StatsPage/EarningsDoughnutGraph';
 import '../css/StatsPage.scss';
 import { getSelectedBankAccounts } from '../services/redux/contextSlice';
 
-const FlowDiffGraph = lazy(() => import('../components/graphs/FlowDiffGraph'));
-const AccountsHistoryGraph = lazy(() => import('../components/graphs/AccountsHistoryGraph'))
+const FlowDiffGraph = lazy(() => import('../components/StatsPage/FlowDiffGraph'));
+const AccountsHistoryGraph = lazy(() => import('../components/StatsPage/AccountsHistoryGraph'))
 
 
 export function StatsPage() {

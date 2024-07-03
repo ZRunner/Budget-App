@@ -7,7 +7,7 @@ import Row from 'react-bootstrap/Row';
 import { useTransferCommands } from '../../services/hooks';
 import { getBankAccounts, getCurrencyRates } from '../../services/redux/moneySlice';
 import { useAppSelector } from '../../services/redux/store';
-import BankAccountSelect from './BankAccountSelect';
+import BankAccountSelect from './selectors/BankAccountSelect';
 import { InputGroup } from 'react-bootstrap';
 
 interface AddTransferFormProps {

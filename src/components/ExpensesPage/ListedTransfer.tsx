@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import { TiDelete } from 'react-icons/ti';
 import { BsPencilFill } from 'react-icons/bs';
-import { useTransferCommands } from "../services/hooks";
-import { Transfer } from "../types";
+import { useTransferCommands } from "../../services/hooks";
+import { Transfer } from "../../types";
 
-import '../css/ExpenseItem.scss';
-import { useAppSelector } from "../services/redux/store";
-import { getBankAccount, getCurrencyRates } from "../services/redux/moneySlice";
+import '../../css/ExpenseItem.scss';
+import { useAppSelector } from "../../services/redux/store";
+import { getBankAccount } from "../../services/redux/moneySlice";
 
 
 interface ListedTransferProps {

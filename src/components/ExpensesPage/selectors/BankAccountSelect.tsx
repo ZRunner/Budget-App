@@ -1,7 +1,7 @@
 import { FormSelectProps } from 'react-bootstrap/FormSelect';
 import Form from 'react-bootstrap/Form';
-import { getBankAccounts } from '../../services/redux/moneySlice';
-import { useAppSelector } from '../../services/redux/store';
+import { getBankAccounts } from '../../../services/redux/moneySlice';
+import { useAppSelector } from '../../../services/redux/store';
 
 interface BankAccountSelectProps extends FormSelectProps { }
 

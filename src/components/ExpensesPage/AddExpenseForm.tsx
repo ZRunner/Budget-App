@@ -7,8 +7,8 @@ import Row from 'react-bootstrap/Row';
 import { useFlowCommands } from '../../services/hooks';
 import { getBankAccounts } from '../../services/redux/moneySlice';
 import { useAppSelector } from '../../services/redux/store';
-import BankAccountSelect from './BankAccountSelect';
-import CategorySelect from './CategorySelect';
+import BankAccountSelect from './selectors/BankAccountSelect';
+import CategorySelect from './selectors/CategorySelect';
 import { InputGroup } from 'react-bootstrap';
 
 interface AddExpenseFormProps {

@@ -1,10 +1,10 @@
 import { FaEquals, FaArrowDown, FaArrowUp } from 'react-icons/fa';
-import '../css/HistoryTable.scss';
-import { useAppSelector } from '../services/redux/store';
-import { getCurrencyRates, getFlows, getTransfers } from '../services/redux/moneySlice';
+import '../../css/HistoryTable.scss';
+import { useAppSelector } from '../../services/redux/store';
+import { getCurrencyRates, getFlows, getTransfers } from '../../services/redux/moneySlice';
 import { useEffect, useMemo, useState } from 'react';
-import { Balance } from '../types';
-import apiHandler from '../services/database';
+import { Balance } from '../../types';
+import apiHandler from '../../services/database';
 
 interface HistoryTableProps {
     startDate: string;

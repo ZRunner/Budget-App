@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import ExpenseList from '../components/ExpenseList';
-import AddExpenseForm from '../components/forms/AddExpenseForm';
-import AddTransferForm from '../components/forms/AddTransferForm';
+import ExpenseList from '../components/ExpensesPage/ExpenseList';
+import AddExpenseForm from '../components/ExpensesPage/AddExpenseForm';
+import AddTransferForm from '../components/ExpensesPage/AddTransferForm';
 
 export default function ExpensesPage() {
     const [expenseModalVisible, setExpenseModalVisible] = useState(false);

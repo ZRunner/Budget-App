@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
-import { getBankAccounts, getCategories, getFlows, getTransfers } from "../services/redux/moneySlice"
-import { useAppSelector } from "../services/redux/store"
-import { isTransfer } from "../services/utils";
+import { getBankAccounts, getCategories, getFlows, getTransfers } from "../../services/redux/moneySlice"
+import { useAppSelector } from "../../services/redux/store"
+import { isTransfer } from "../../services/utils";
 import ListedFlow from "./ListedFlow";
 import ListedTransfer from "./ListedTransfer";
 

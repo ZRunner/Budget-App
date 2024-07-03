@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
-import BankAccountsSelect from '../components/forms/BankAccountsSelect';
-import HistoryTable from '../components/HistoryTable';
+import BankAccountsSelect from '../components/shared/BankAccountsSelect';
+import HistoryTable from '../components/HistoryPage/HistoryTable';
 import { getSelectedBankAccounts } from '../services/redux/contextSlice';
 
 

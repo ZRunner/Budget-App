@@ -39,8 +39,6 @@ export default function FlowDiffGraph({ startDate, endDate, bankAccounts }: Flow
     const currencyRates = useAppSelector(getCurrencyRates);
     const accounts = useAppSelector(getBankAccounts);
 
-    const currencyRatesMap = new Map(accounts.map(acc => [acc.id, currencyRates[acc.currency]]));
-
     const filteredFlows = useMemo(() => {
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
@@ -79,6 +77,8 @@ export default function FlowDiffGraph({ startDate, endDate, bankAccounts }: Flow
         let labels: string[] = [];
         let expensesData: Point[] = [];
         let earningsData: Point[] = [];
+
+        const currencyRatesMap = new Map(accounts.map(acc => [acc.id, currencyRates[acc.currency]]));
 
         while (day <= today) {
             const day_flows = getFlowsOfDay(day);
@@ -122,7 +122,7 @@ export default function FlowDiffGraph({ startDate, endDate, bankAccounts }: Flow
                 },
             ],
         }
-    }, [startDate, endDate, filteredFlows])
+    }, [startDate, endDate, filteredFlows, accounts, currencyRates])
 
     return (
         <Line
