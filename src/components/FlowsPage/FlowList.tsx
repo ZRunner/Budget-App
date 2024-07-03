@@ -3,12 +3,12 @@ import React, { useMemo, useState } from "react";
 import { getBankAccounts, getCategories, getFlows, getTransfers } from "../../services/redux/moneySlice";
 import { useAppSelector } from "../../services/redux/store";
 import { isTransfer } from "../../services/utils";
-import ListedFlow from "./ListedFlow";
-import ListedTransfer from "./ListedTransfer";
+import FlowRow from "./FlowRow";
+import TransferRow from "./TransferRow";
 
 const sortDates = (a: { date: string }, b: { date: string }) => new Date(b.date).getTime() - new Date(a.date).getTime();
 
-export default function ExpenseList() {
+export default function FlowList() {
   const flows = useAppSelector(getFlows);
   const transfers = useAppSelector(getTransfers);
   const bankAccounts = useAppSelector(getBankAccounts);
@@ -32,7 +32,7 @@ export default function ExpenseList() {
 
     const getCategory = (categoryId: number) => categories.find(cat => cat.id === categoryId);
 
-    const searchResultExpenses = flows.filter(
+    const searchResultFlows = flows.filter(
       (flow) => flow.name.toLowerCase().includes(searchTerms)
                 || getBankAccount(flow.bankAccount)?.name.toLowerCase().includes(searchTerms)
                 || getCategory(flow.category)?.name.toLowerCase().includes(searchTerms)
@@ -43,7 +43,7 @@ export default function ExpenseList() {
                 || getBankAccount(transfer.toAccount)?.name.toLowerCase().includes(searchTerms)
                 || getCategory(transfer.category)?.name.toLowerCase().includes(searchTerms)
     );
-    return [...searchResultExpenses, ...searchResultTransfers].sort(sortDates);
+    return [...searchResultFlows, ...searchResultTransfers].sort(sortDates);
   }, [flows, transfers, bankAccounts, categories, searchTerms]);
 
   return (
@@ -58,9 +58,9 @@ export default function ExpenseList() {
         {
           filteredItems.map((item) => {
             if (isTransfer(item)) { // it is a transfer
-              return <ListedTransfer key={item.id + "t"} transfer={item} />;
+              return <TransferRow key={item.id + "t"} transfer={item} />;
             } else { // it is a normal expense
-              return <ListedFlow key={item.id + "f"} flow={item} />;
+              return <FlowRow key={item.id + "f"} flow={item} />;
             }
           })
         }

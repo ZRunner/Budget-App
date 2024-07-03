@@ -1,14 +1,14 @@
 import { useState } from "react";
 
-import ExpenseForm, { ExpenseFormInputType } from "./ExpenseForm";
+import FlowForm, { FlowFormInputType } from "./FlowForm";
 
-interface AddExpenseFormProps {
+interface AddFlowProps {
   visible: boolean;
   onHide: () => void;
 }
 
-export default function AddExpenseForm({ visible, onHide }: AddExpenseFormProps) {
-  const [inputs, setInputs] = useState<ExpenseFormInputType>({
+export default function AddFlow({ visible, onHide }: AddFlowProps) {
+  const [inputs, setInputs] = useState<FlowFormInputType>({
     id: undefined,
     name: "",
     cost: undefined,
@@ -18,11 +18,11 @@ export default function AddExpenseForm({ visible, onHide }: AddExpenseFormProps)
   });
 
   return (
-    <ExpenseForm
+    <FlowForm
       visible={visible}
       onHide={onHide}
       expense={inputs}
-      setExpense={setInputs}
+      setFlow={setInputs}
     />
   );
 }

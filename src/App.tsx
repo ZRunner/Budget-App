@@ -5,10 +5,10 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import SummaryBox from "./components/SummaryBox";
-import ExpensesPage from "./pages/ExpensesPage";
+import FlowsPage from "./pages/FlowsPage";
 import HistoryPage from "./pages/HistoryPage";
 import { StatsPage } from "./pages/StatsPage";
 import apiHandler from "./services/database";
@@ -75,7 +75,7 @@ function App() {
           </TabList>
         </Box>
         <TabPanel value="1">
-          <ExpensesPage />
+          <FlowsPage />
         </TabPanel>
         <TabPanel value="2">
           <HistoryPage />

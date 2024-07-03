@@ -1,4 +1,4 @@
-import "../../css/ExpenseItem.scss";
+import "../../css/FlowItem.scss";
 
 import chroma from "chroma-js";
 import { memo, useMemo } from "react";
@@ -12,11 +12,11 @@ import { useAppSelector } from "../../services/redux/store";
 import { Flow } from "../../types";
 
 
-interface ListedFlowProps {
+interface FlowRowProps {
   flow: Flow;
 }
 
-export default function ListedFlow({ flow }: ListedFlowProps) {
+export default function FlowRow({ flow }: FlowRowProps) {
   const { deleteFlowCommand } = useFlowCommands();
   const bankAccount = useAppSelector(state => getBankAccount(state, flow.bankAccount));
   const category = useAppSelector(state => getCategory(state, flow.category));
@@ -26,7 +26,7 @@ export default function ListedFlow({ flow }: ListedFlowProps) {
   [flow.date]
   );
 
-  const handleDeleteExpense = () => {
+  const handleDeleteFlow = () => {
     deleteFlowCommand(flow.id);
   };
 
@@ -49,7 +49,7 @@ export default function ListedFlow({ flow }: ListedFlowProps) {
         </small>
         <AmountPill amount={flow.cost} currency={flow.currency} />
         <BsPencilFill className="edit-btn mx-1" size="1.3em" />
-        <TiDelete className="delete-btn" size="1.5em" onClick={handleDeleteExpense} />
+        <TiDelete className="delete-btn" size="1.5em" onClick={handleDeleteFlow} />
       </div>
     </li>
   );

@@ -1,4 +1,4 @@
-import "../../css/ExpenseItem.scss";
+import "../../css/FlowItem.scss";
 
 import { useMemo } from "react";
 import { BsPencilFill } from "react-icons/bs";
@@ -10,11 +10,11 @@ import { useAppSelector } from "../../services/redux/store";
 import { Transfer } from "../../types";
 
 
-interface ListedTransferProps {
+interface TransferRowProps {
     transfer: Transfer;
 }
 
-export default function ListedTransfer({ transfer }: ListedTransferProps) {
+export default function TransferRow({ transfer }: TransferRowProps) {
   const { deleteTransferCommand } = useTransferCommands();
   const fromAccount = useAppSelector(state => getBankAccount(state, transfer.fromAccount));
   const toAccount = useAppSelector(state => getBankAccount(state, transfer.toAccount));

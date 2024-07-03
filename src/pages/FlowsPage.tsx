@@ -1,16 +1,16 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 
-import ExpenseList from "../components/ExpensesPage/ExpenseList";
-import AddExpenseForm from "../components/ExpensesPage/forms/AddExpenseForm";
-import AddTransferForm from "../components/ExpensesPage/forms/AddTransferForm";
+import FlowList from "../components/FlowsPage/FlowList";
+import AddFlow from "../components/FlowsPage/forms/AddFlow";
+import AddTransferForm from "../components/FlowsPage/forms/AddTransferForm";
 
-export default function ExpensesPage() {
-  const [expenseModalVisible, setExpenseModalVisible] = useState(false);
+export default function FlowsPage() {
+  const [expenseModalVisible, setFlowModalVisible] = useState(false);
   const [transferModalVisible, setTransferModalVisible] = useState(false);
 
-  const showExpenseModal = () => {
-    setExpenseModalVisible(true);
+  const showFlowModal = () => {
+    setFlowModalVisible(true);
   };
 
   const showTransferModal = () => {
@@ -19,9 +19,9 @@ export default function ExpensesPage() {
 
   return (
     <>
-      <AddExpenseForm
+      <AddFlow
         visible={expenseModalVisible}
-        onHide={() => setExpenseModalVisible(false)}
+        onHide={() => setFlowModalVisible(false)}
       />
       <AddTransferForm
         visible={transferModalVisible}
@@ -30,7 +30,7 @@ export default function ExpensesPage() {
 
       <div>
         <span>
-          <Button variant="primary" onClick={showExpenseModal}>Add an expense</Button>
+          <Button variant="primary" onClick={showFlowModal}>Add an expense</Button>
         </span>
         <span className="mx-1">
           <Button variant="primary" onClick={showTransferModal} >Add a transfer</Button>
@@ -40,7 +40,7 @@ export default function ExpensesPage() {
       <h3 className="mt-3">Expenses</h3>
       <div className="row mt-3">
         <div className="col-sm">
-          <ExpenseList />
+          <FlowList />
         </div>
       </div>
     </>

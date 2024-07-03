@@ -12,18 +12,18 @@ import { Flow } from "../../../types";
 import BankAccountSelect from "../selectors/BankAccountSelect";
 import CategorySelect from "../selectors/CategorySelect";
 
-export type ExpenseFormInputType = Omit<Flow, "id" | "cost" | "currency"> & { id: number | undefined, cost: number | undefined };
+export type FlowFormInputType = Omit<Flow, "id" | "cost" | "currency"> & { id: number | undefined, cost: number | undefined };
 
-interface ExpenseFormProps {
+interface FlowFormProps {
   visible: boolean;
   onHide: () => void;
-  expense: ExpenseFormInputType;
-  setExpense: (expense: ExpenseFormInputType) => void;
+  expense: FlowFormInputType;
+  setFlow: (expense: FlowFormInputType) => void;
 }
 
 const amountPlaceholder = new Intl.NumberFormat(undefined, { minimumFractionDigits: 2 }).format(0.0);
 
-export default function ExpenseForm({ visible, onHide, expense, setExpense }: ExpenseFormProps) {
+export default function FlowForm({ visible, onHide, expense, setFlow: setFlow }: FlowFormProps) {
   const { addFlowCommand } = useFlowCommands();
   const accounts = useAppSelector(getBankAccounts);
 
@@ -32,12 +32,12 @@ export default function ExpenseForm({ visible, onHide, expense, setExpense }: Ex
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const id = event.target.id;
     const value = event.target.value;
-    setExpense({ ...expense, [id]: value });
+    setFlow({ ...expense, [id]: value });
   };
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const id = event.target.id;
     const value = event.target.value;
-    setExpense({ ...expense, [id]: Number(value) });
+    setFlow({ ...expense, [id]: Number(value) });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -49,9 +49,9 @@ export default function ExpenseForm({ visible, onHide, expense, setExpense }: Ex
     onHide();
   };
 
-  const isNewExpense = expense.id === undefined;
-  const modalTitle = isNewExpense ? "New expense" : `Edit expense #${expense.id}`;
-  const submitLable = isNewExpense ? "Add expense" : "Save changes";
+  const isNewFlow = expense.id === undefined;
+  const modalTitle = isNewFlow ? "New expense" : `Edit expense #${expense.id}`;
+  const submitLable = isNewFlow ? "Add expense" : "Save changes";
 
   return (
     <Modal show={visible} onHide={onHide}>
