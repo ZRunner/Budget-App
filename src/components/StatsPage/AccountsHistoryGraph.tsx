@@ -30,7 +30,7 @@ interface Point {
 interface AccountMapValue {
   name: BankAccount["name"];
   color: BankAccount["color"];
-  initial_balance?: BankAccount["initialBalance"];
+  initialBalance: BankAccount["initialBalance"];
   currency: BankAccount["currency"];
 }
 
@@ -40,6 +40,14 @@ const getTime = (day: string | Date) => {
   return parsed.getTime();
 };
 
+function getAccountsMap(accounts: BankAccount[], bankAccounts: number[]) {
+  const result = new Map<number | "total", AccountMapValue | undefined>(bankAccounts.map(id => [
+    id,
+    accounts.find(acc => acc.id === id),
+  ]));
+  result.set("total", { name: "Total", "color": "#009926", currency: "EUR", initialBalance: 0 });
+  return result;
+}
 
 export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts }: AccountsHistoryGraphProps) {
   const flows = useAppSelector(getFlows);
@@ -48,16 +56,6 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
   const currencyRates = useAppSelector(getCurrencyRates);
 
   const format = (value: number, currency: string) => new Intl.NumberFormat(undefined, { style: "currency", currency }).format(value);
-  const currenciesMap = new Map(accounts.map(acc => [acc.id, acc.currency]));
-
-  function getAccountsMap() {
-    const result = new Map<number | "total", AccountMapValue | undefined>(bankAccounts.map(id => [
-      id,
-      accounts.find(acc => acc.id === id),
-    ]));
-    result.set("total", { name: "Total", "color": "#009926", currency: "EUR" });
-    return result;
-  }
 
   const sortedFlows = useMemo(() => {
     const result = new Map<number, Flow[]>();
@@ -75,15 +73,16 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
     return result;
   }, [flows, bankAccounts]);
 
-  const filteredTransfers = useMemo(() => (
-    transfers.filter(tr => bankAccounts.includes(tr.fromAccount) || bankAccounts.includes(tr.toAccount))
-  ), [transfers, bankAccounts]);
 
   const data = useMemo(() => {
     console.debug("calculating AccountsHistoryGraph");
-    const accountsMap = getAccountsMap();
+    const startDateParsed = new Date(startDate);
+    const currenciesMap = new Map(accounts.map(acc => [acc.id, acc.currency]));
+    const accountsMap = getAccountsMap(accounts, bankAccounts);
 
-    const iterationDay = new Date(startDate);
+    const filteredTransfers = transfers.filter(tr => bankAccounts.includes(tr.fromAccount) || bankAccounts.includes(tr.toAccount));
+
+    const iterationDay = new Date(Math.min.apply(null, accounts.map(acc => getTime(acc.creationDate))));
     iterationDay.setHours(0, 0, 0, 0);
     const result = new Map<number | "total", Point[]>(bankAccounts.map(acc => [
       acc,
@@ -94,7 +93,7 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
 
     const balancePerAcc = new Map(bankAccounts.map(accountId => [
       accountId,
-      accountsMap.get(accountId)?.initial_balance ?? 0,
+      accountsMap.get(accountId)?.initialBalance ?? -10000,
     ]));
     const today = endDate ? new Date(endDate) : new Date();
     today.setHours(0, 0, 0, 0);
@@ -142,17 +141,17 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
         }
       }
 
-      const shouldUpdateGraph = iterationDay.getDay() === 1 || iterationDay.getTime() === today.getTime();
+      const shouldUpdateGraph = iterationDay > startDateParsed && (iterationDay.getDay() === 1 || iterationDay.getTime() === today.getTime());
       let total = 0;
       const formatedDay = iterationDay.toLocaleDateString(undefined, { timeZone: "UTC" });
       dayDiff.forEach((value, accountId) => {
         if (value === undefined) return;
         const rValue = Math.round(value * 1000) / 1000;
+        if (rValue < 0) {
+          console.warn("Found value below 0:", rValue, "on", formatedDay, "for account", accountId);
+        }
         if (shouldUpdateGraph) {
           addValue(accountId, formatedDay, rValue);
-          if (rValue < 0) {
-            console.debug("Found value below 0:", rValue, "on", formatedDay, "for account", accountId);
-          }
         }
         balancePerAcc.set(accountId, rValue);
         total += rValue / currencyRates[currenciesMap.get(accountId) ?? "EUR"];
@@ -177,7 +176,7 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
           backgroundColor: account?.color,
         })),
     };
-  }, [startDate, endDate, bankAccounts, sortedFlows, transfers, accounts]);
+  }, [startDate, endDate, bankAccounts, sortedFlows, transfers, accounts, currencyRates]);
 
   return (
     <Line
