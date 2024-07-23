@@ -126,17 +126,26 @@ export default function AccountsHistoryGraph({ startDate, endDate, bankAccounts 
       const dayDiff = new Map(bankAccounts.map(acc => [acc, balancePerAcc.get(acc)]));
       for (const exp of getFlowsOfDay(iterationDay)) {
         if (bankAccounts.includes(exp.bankAccount)) {
-          const prev = dayDiff.get(exp.bankAccount) ?? 0;
+          const prev = dayDiff.get(exp.bankAccount);
+          if (prev === undefined) {
+            throw new Error("Account not found: " + exp.bankAccount);
+          }
           dayDiff.set(exp.bankAccount, prev + exp.cost);
         }
       }
       for (const transfer of getTransfersOfDay(iterationDay)) {
         if (bankAccounts.includes(transfer.fromAccount)) {
-          const prev = dayDiff.get(transfer.fromAccount) ?? 0;
+          const prev = dayDiff.get(transfer.fromAccount);
+          if (prev === undefined) {
+            throw new Error("Account not found: " + transfer.fromAccount);
+          }
           dayDiff.set(transfer.fromAccount, prev - transfer.amount);
         }
         if (bankAccounts.includes(transfer.toAccount)) {
-          const prev = dayDiff.get(transfer.toAccount) ?? 0;
+          const prev = dayDiff.get(transfer.toAccount);
+          if (prev === undefined) {
+            throw new Error("Account not found: " + transfer.fromAccount);
+          }
           dayDiff.set(transfer.toAccount, prev + transfer.amount * transfer.rate);
         }
       }
