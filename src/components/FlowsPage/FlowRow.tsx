@@ -73,7 +73,7 @@ const AmountPill = memo(
     const pillColor = amount > 0 ? "success" : "danger";
 
     const pill = (
-      <span className={`badge bg-${pillColor} rounded-pill me-3`}>
+      <span className={`amount-pill badge bg-${pillColor} rounded-pill me-3`}>
         {formatedAmount}
       </span>
     );
