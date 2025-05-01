@@ -251,8 +251,4 @@ app.get("/api/currency_rates", async (req, res, next) => {
 });
 
 
-app.get("*", (req, res) => {
-  res.sendFile("index.html", { root });
-});
-
 app.listen(8080, () => console.log("Server ready"));

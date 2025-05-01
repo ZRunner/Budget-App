@@ -6,7 +6,6 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
 
-import { useFlowCommands } from "../../../services/hooks";
 import { getBankAccounts } from "../../../services/redux/moneySlice";
 import { useAppSelector } from "../../../services/redux/store";
 import { Flow } from "../../../types";

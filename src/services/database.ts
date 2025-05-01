@@ -32,7 +32,7 @@ class ApiHandler {
     return (await resp.json()).map((f: DbFlow) => {
       const d = new Date(f.date);
       const { bank_account: bankAccount, ...data } = f;
-      return { ...data, date: formatDate(d), bankAccount: bankAccount } as Flow;
+      return { ...data, date: formatDate(d), bankAccount } as Flow;
     });
   }
 
