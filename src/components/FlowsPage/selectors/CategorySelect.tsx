@@ -7,7 +7,8 @@ import { useAppSelector } from "../../../services/redux/store";
 type CategorySelectProps = FormSelectProps
 
 export default function CategorySelect(props: CategorySelectProps) {
-  const categories = useAppSelector(getCategories);
+  const categories = useAppSelector(getCategories)
+    .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (
     <Form.Select {...props}>

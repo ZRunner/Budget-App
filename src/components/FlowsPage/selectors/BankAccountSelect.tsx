@@ -7,7 +7,8 @@ import { useAppSelector } from "../../../services/redux/store";
 type BankAccountSelectProps = FormSelectProps
 
 export default function BankAccountSelect(props: BankAccountSelectProps) {
-  const accounts = useAppSelector(getBankAccounts);
+  const accounts = useAppSelector(getBankAccounts)
+    .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (
     <Form.Select {...props}>
