@@ -4,9 +4,10 @@ import https from "https";
 import path from "path";
 import { exit } from "process";
 import mysql from "promise-mysql";
+const __dirname = import.meta.dirname;
 
 import { FlowInput, TransferInput } from "./src/types";
-dotenv.config({ path: __dirname + "/.env" });
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 if (process.env.DB_HOST === undefined || process.env.DB_USER === undefined || process.env.DB_PWD === undefined || process.env.DB_NAME === undefined) {
   console.debug(`Connecting to database ${process.env.DB_HOST}:${process.env.DB_PORT || 3306} with user ${process.env.DB_USER}`);
@@ -30,9 +31,8 @@ app.use(handleError);
 
 
 // database connection
-let db: mysql.Pool;
 console.debug(`Connecting to database ${process.env.DB_HOST}:${process.env.DB_PORT || 3306} with user ${process.env.DB_USER}`);
-mysql.createPool({
+const db = await mysql.createPool({
   host: process.env.DB_HOST,
   port: (Number(process.env.DB_PORT || 3306)),
   user: process.env.DB_USER,
@@ -42,13 +42,10 @@ mysql.createPool({
   acquireTimeout: 60 * 60 * 1000,
   timeout: 60 * 60 * 1000,
 })
-  .then(pool => {
-    console.debug("Database pool created");
-    db = pool;
-    db.on("connection", () =>
-      console.log("Connected to database!")
-    );
-  }).catch(console.error);
+console.debug("Database pool created");
+db.on("connection", () =>
+  console.log("Connected to database!")
+);
 
 app.get("/api/bank_accounts", async (req, res) => {
   const query = await db.query("SELECT * FROM bank_accounts;");
